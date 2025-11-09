@@ -2,172 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Miss Poppins Parlour Adventure</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whimsical Parlour Chat Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
   body {
-    margin:0; font-family:'Patrick Hand', cursive; background: linear-gradient(135deg, indigo, #2c003e); color:white; overflow-x:hidden;
+    margin:0;
+    font-family:'Patrick Hand', cursive;
+    background: url('https://i.imgur.com/qM6RZKq.png') no-repeat center top;
+    background-size: cover;
+    color: #fff;
+    overflow-x: hidden;
   }
-  #chatContainer {
-    width: 60%; max-width:600px; margin:50px auto; background:rgba(255,255,255,0.05); border-radius:15px; padding:20px; box-shadow:0 0 15px rgba(0,0,0,0.5);
+
+  /* Chat area */
+  #chat-container {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    height: 350px;
+    background: rgba(25,0,50,0.7);
+    border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    box-shadow: 0 0 15px #7b68ee;
   }
-  #chat { height:400px; overflow-y:auto; margin-bottom:10px; }
-  .message { padding:8px 12px; border-radius:10px; margin:6px 0; max-width:80%; }
-  .miss { background:rgba(255,255,255,0.2); align-self:flex-start; }
-  .user { background:rgba(0,0,0,0.3); align-self:flex-end; margin-left:auto; }
-  #userInput { width:calc(100% - 60px); padding:8px; border-radius:5px; border:none; }
-  #sendBtn { padding:8px 12px; border:none; border-radius:5px; background:#6a0dad; color:white; cursor:pointer; }
 
-  /* Virtue Shelf */
-  #virtueShelf { position:fixed; top:100px; left:20px; display:flex; flex-direction:column; gap:15px; z-index:10; }
-  .virtue { width:50px; height:50px; background:rgba(255,255,255,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:transform 0.2s; font-size:24px; }
-  .virtue:hover { transform:scale(1.2); }
-  .virtue.completed::after { content:"✔"; position:absolute; top:-5px; right:-5px; color:gold; font-size:1.2em; animation: glow 1s infinite alternate; }
-  @keyframes glow { 0%{text-shadow:0 0 2px gold;} 100%{text-shadow:0 0 10px gold;} }
+  .chat-message {
+    margin: 5px 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+    background: rgba(255,255,255,0.1);
+  }
 
-  /* Lore Popup */
-  #lorePopup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; }
-  #loreMessage { background:#220044; padding:20px; border-radius:15px; max-width:400px; text-align:center; }
-  .close-popup { margin-top:10px; cursor:pointer; color:#ffcc00; }
+  .chat-message.user {
+    align-self: flex-end;
+    background: rgba(100,149,237,0.7);
+  }
+
+  .chat-message.bot {
+    align-self: flex-start;
+    background: rgba(138,43,226,0.6);
+  }
+
+  #user-input {
+    margin-top: auto;
+    display:flex;
+  }
+
+  #user-input input {
+    flex:1;
+    padding:10px;
+    border-radius:8px 0 0 8px;
+    border:none;
+    outline:none;
+    font-family:'Patrick Hand', cursive;
+  }
+
+  #user-input button {
+    padding:10px;
+    border:none;
+    background: #7b68ee;
+    color:white;
+    cursor:pointer;
+    border-radius:0 8px 8px 0;
+    font-family:'Patrick Hand', cursive;
+  }
+
+  /* Virtues shelf */
+  #virtue-shelf {
+    position: fixed;
+    top: 20%;
+    right: 10px;
+    display:flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 2;
+  }
+
+  .virtue-icon {
+    width:50px;
+    height:50px;
+    background: rgba(255,255,255,0.2);
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 24px;
+    cursor:pointer;
+    position: relative;
+  }
+
+  /* Floating Steam */
+  .steam {
+    position:fixed; bottom:50px; left:50px; width:20px; height:20px;
+    background:rgba(255,255,255,0.2); border-radius:50%;
+    animation: rise 6s infinite ease-in;
+    filter:blur(4px);
+    z-index:0;
+  }
+  @keyframes rise {
+    0%{transform:translateY(0) scale(1);opacity:0.4;}
+    50%{opacity:0.8;}
+    100%{transform:translateY(-200px) scale(1.5);opacity:0;}
+  }
+
+  /* Sparkles */
+  .sparkle {
+    position:fixed; width:5px; height:5px; background:white;
+    border-radius:50%; opacity:0.8;
+    animation: twinkle 3s infinite;
+    z-index:1;
+  }
+  @keyframes twinkle {
+    0%,100%{opacity:0.2; transform:scale(1);}
+    50%{opacity:1; transform:scale(1.5);}
+  }
 
   /* Music Drawer */
-  #musicDrawer { position:fixed; right:-250px; top:50%; transform:translateY(-50%); width:220px; background:rgba(50,0,80,0.95); border-radius:10px 0 0 10px; padding:15px; transition: right 0.5s; z-index:20; }
-  #musicDrawer.open { right:0; }
-  #musicDrawer h3 { text-align:center; font-family:'Patrick Hand', cursive; }
-  .controls { display:flex; justify-content:center; gap:5px; margin-top:10px; }
-  .controls button { margin-top:10px; padding:6px 10px; font-size:1em; cursor:pointer; border:none; border-radius:5px; background:#6a0dad; color:white; }
-  .track.active { background:#6a0dad; padding:4px 6px; border-radius:4px; margin:3px 0; cursor:pointer; }
+  #music-drawer {
+    position: fixed;
+    top:50%;
+    right: -250px;
+    transform: translateY(-50%);
+    width: 220px;
+    background: rgba(50,0,100,0.9);
+    border-radius: 12px 0 0 12px;
+    padding: 10px;
+    transition: right 0.5s ease;
+    font-family:'Patrick Hand', cursive;
+    box-shadow: -2px 2px 15px #7b68ee;
+    z-index: 3;
+  }
 
-  /* Floating Notes */
-  .note { position:fixed; font-size:24px; animation: floatNote 4s linear forwards; }
-  @keyframes floatNote { 0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-200px) rotate(30deg);} }
+  #music-drawer h3 {
+    margin-top:0; font-size:18px; text-align:center; font-family:'Patrick Hand', cursive;
+  }
 
-  /* Reset Button */
-  #resetParlour { position:fixed; bottom:10px; right:10px; z-index:1000; padding:8px 12px; background:#6a0dad; color:white; border:none; border-radius:5px; cursor:pointer; }
+  .music-track {
+    margin:8px 0;
+    cursor:pointer;
+  }
+
+  #music-drawer.open { right: 0; }
+
 </style>
 </head>
 <body>
 
-<!-- Chat Container -->
-<div id="chatContainer">
-  <div id="chat"></div>
-  <input type="text" id="userInput" placeholder="Type here...">
-  <button id="sendBtn">Enter</button>
+<!-- Virtues Shelf -->
+<div id="virtue-shelf">
+  <div class="virtue-icon" title="Etiquette">🫖</div>
+  <div class="virtue-icon" title="Lore">📚</div>
+  <div class="virtue-icon" title="Herb Garden">🌿</div>
+  <div class="virtue-icon" title="Proverbs & Poetry">🖋️</div>
 </div>
 
-<!-- Virtue Shelf -->
-<div id="virtueShelf">
-  <div class="virtue" id="v1">🎩</div>
-  <div class="virtue" id="v2">📚</div>
-  <div class="virtue" id="v3">🌿</div>
-  <div class="virtue" id="v4">✒️</div>
-  <div class="virtue" id="v5">📜</div>
-</div>
-
-<!-- Lore Popup -->
-<div id="lorePopup">
-  <div id="loreMessage">
-    <div id="loreFrame"></div>
-    <div class="close-popup">Close ✖</div>
+<!-- Chat container -->
+<div id="chat-container">
+  <div class="chat-message bot">Spit-spot! Welcome to the Parlour. Tea, wisdom, or adventure today?</div>
+  <div id="user-input">
+    <input type="text" id="user-text" placeholder="Type your reply...">
+    <button id="send-btn">Enter</button>
   </div>
 </div>
 
 <!-- Music Drawer -->
-<div id="musicDrawer">
-  <h3>Melodies of the Parlour</h3>
-  <div id="trackList"></div>
-  <div class="controls">
-    <button id="prevTrack">⏮</button>
-    <button id="playPause">▶</button>
-    <button id="nextTrack">⏭</button>
-  </div>
-  <label>Volume <input type="range" id="volume" min="0" max="1" step="0.01" value="0.5"></label>
-  <button id="closeDrawer" style="margin-top:10px;">Close</button>
+<div id="music-drawer">
+  <h3>Theme Music</h3>
+  <div class="music-track" data-src="track1.mp3">Gentle Chimes</div>
+  <div class="music-track" data-src="track2.mp3">Soft Strings</div>
+  <div class="music-track" data-src="track3.mp3">Ambient Flow</div>
+  <div class="music-track" data-src="track4.mp3">Evening Calm</div>
+  <audio id="music-player" loop></audio>
 </div>
 
-<!-- Reset Parlour -->
-<button id="resetParlour">Reset Parlour</button>
-
 <script>
-// === Chat & Quest ===
-const chat=document.getElementById('chat');
-const input=document.getElementById('userInput');
-const sendBtn=document.getElementById('sendBtn');
-function addMessage(text,sender='miss'){const msg=document.createElement('div');msg.classList.add('message',sender);msg.innerHTML=text;chat.appendChild(msg);chat.scrollTop=chat.scrollHeight;}
+  const chatContainer = document.getElementById('chat-container');
+  const userInput = document.getElementById('user-text');
+  const sendBtn = document.getElementById('send-btn');
+  const musicDrawer = document.getElementById('music-drawer');
+  const musicPlayer = document.getElementById('music-player');
 
-if(!localStorage.getItem('chatStarted')){
-  addMessage("Spit-spot! I’m Miss Poppins, your whimsical guide. Type <b>begin quest</b> to start an adventure, or click a glowing virtue on the shelf.", "miss");
-  localStorage.setItem('chatStarted','true');
-}
+  // Helper: add chat message
+  function addMessage(text, sender='bot'){
+    const msg = document.createElement('div');
+    msg.classList.add('chat-message', sender);
+    msg.innerText=text;
+    chatContainer.insertBefore(msg, document.getElementById('user-input'));
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
 
-// Virtue Shelf
-const virtueLore={v1:{title:"Etiquette",text:"☁️ Good manners are love made visible.",link:"https://en.wikipedia.org/wiki/Etiquette"},v2:{title:"Lore",text:"🔥 Legends are but truths told sideways.",link:"https://www.gutenberg.org/ebooks/14568"},v3:{title:"Herb Garden",text:"🪞Chamomile soothes both stomach and spirit.",link:"https://www.herbalgram.org/"},v4:{title:"Proverbs",text:"🌷‘Kind words are short and easy to speak, but their echoes are endless.’",link:"https://www.phrases.org.uk/meanings/proverbs.html"},v5:{title:"Poetry",text:"✨‘The world is full of magical things patiently waiting for our senses to grow sharper.’",link:"https://www.poetryfoundation.org/"}};
+  // Music Drawer Riddle Logic
+  let riddleAnswered=false;
+  const mannersRiddle = "If I offer my hand politely, what is my next step?";
+  const riddleAnswer = "bow";
 
-let completedVirtues=JSON.parse(localStorage.getItem('completedVirtues') || "[]");
-completedVirtues.forEach(id=>{const v=document.getElementById(id);if(v)v.classList.add('completed');});
-
-document.querySelectorAll('.virtue').forEach(v=>{
-  v.addEventListener('click',()=>{
-    const lore=virtueLore[v.id];
-    if(lore){
-      document.getElementById("loreMessage").innerHTML=`<h3>${lore.title}</h3><p>${lore.text}</p><div class="close-popup">Close ✖</div>`;
-      document.getElementById("loreFrame").src=lore.link;
-      document.getElementById("lorePopup").style.display="flex";
-      v.classList.add('completed');
-      if(!completedVirtues.includes(v.id)){completedVirtues.push(v.id);localStorage.setItem('completedVirtues',JSON.stringify(completedVirtues));}
-      document.querySelector(".close-popup").addEventListener('click',()=>{document.getElementById("lorePopup").style.display="none";document.getElementById("loreFrame").src="";});
+  function checkRiddle(input){
+    if(input.toLowerCase().includes(riddleAnswer)){
+      riddleAnswered=true;
+      musicDrawer.classList.add('open');
+      addMessage("Splendid! The music drawer slides open with gentle notes.", 'bot');
+    } else {
+      addMessage("Hmm, not quite. Consider manners carefully.", 'bot');
     }
+  }
+
+  // Chat responses
+  function botResponse(input){
+    const text=input.toLowerCase();
+    if(text.includes('tea')){
+      addMessage("Ah, tea! Shall we try Black, Matcha, Chai, or Boba?", 'bot');
+    } else if(text.includes('music')){
+      if(!riddleAnswered){
+        addMessage(`To unlock the music, answer this riddle: ${mannersRiddle}`, 'bot');
+      }
+    } else if(riddleAnswered && text.includes('play')){
+      musicPlayer.play();
+      addMessage("Playing the gentle ambient tunes...", 'bot');
+    } else if(text.includes('stop') || text.includes('pause')){
+      musicPlayer.pause();
+      addMessage("Music paused.", 'bot');
+    } else if(text.includes('quest')){
+      addMessage("Your adventure awaits! Choose: Level 1 - Mindfulness, Level 2 - Self-Care, Level 3 - Personal Growth.", 'bot');
+    } else {
+      // If riddle expected
+      if(!riddleAnswered && text.includes(riddleAnswer)){
+        checkRiddle(text);
+      } else {
+        addMessage("Splendid! Tell me more, dear friend.", 'bot');
+      }
+    }
+  }
+
+  // Send button and Enter key
+  sendBtn.onclick = ()=>{ 
+    const text=userInput.value;
+    if(text.trim()==='') return;
+    addMessage(text,'user');
+    botResponse(text);
+    userInput.value='';
+  }
+
+  userInput.addEventListener("keypress", function(e){
+    if(e.key==='Enter'){ sendBtn.click(); }
   });
-});
 
-// Chat Handling
-sendBtn.onclick=()=>handleInput();
-input.addEventListener("keypress",e=>{if(e.key==="Enter")handleInput();});
-let riddleAsked=false;
-let musicUnlocked=JSON.parse(localStorage.getItem('musicUnlocked')||"false");
-function handleInput(){const text=input.value.trim();if(!text)return;addMessage(text,'user');input.value='';processInput(text.toLowerCase());}
-function processInput(text){
-  if(text.includes("begin quest")){addMessage("Splendid! We shall begin with calm — the very first cup of virtue.", "miss");return;}
-  if(!musicUnlocked && riddleAsked){
-    if(text==="thank you"||text==="thankyou"){addMessage("Splendidly polite! The Drawer of Melody opens for you — may it serenade your splendid soul.", "miss");musicUnlocked=true;localStorage.setItem('musicUnlocked','true');playChime();openDrawer();}
-    else{addMessage("Oh, nearly! Manners are the true key to music — try once more.", "miss");}
-    return;
+  // Music track selection
+  document.querySelectorAll('.music-track').forEach(track=>{
+    track.addEventListener('click', ()=>{
+      musicPlayer.src=track.getAttribute('data-src');
+      musicPlayer.play();
+    });
+  });
+
+  // Floating Steam & Sparkles
+  for(let i=0;i<8;i++){
+    let s=document.createElement('div'); s.classList.add('steam');
+    s.style.left=(50+Math.random()*50)+'px';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    document.body.appendChild(s);
   }
-  if(text.includes("music")||text.includes("song")){
-    if(!riddleAsked && !musicUnlocked){askRiddle();return;}
+
+  for(let i=0;i<15;i++){
+    let sp=document.createElement('div'); sp.classList.add('sparkle');
+    sp.style.left=(Math.random()*window.innerWidth)+'px';
+    sp.style.top=(Math.random()*window.innerHeight)+'px';
+    sp.style.animationDelay=(Math.random()*3)+'s';
+    document.body.appendChild(sp);
   }
-  addMessage("Hmm, quite so. Would you like to talk about tea, virtues, or perhaps music?", "miss");
-}
-function askRiddle(){addMessage("Mind your manners, my dear: what must one always remember to say when given a cup of tea?", "miss");riddleAsked=true;}
-
-// === Music Drawer ===
-const drawer=document.getElementById('musicDrawer');
-const closeDrawerBtn=document.getElementById('closeDrawer');
-const tracks=[{title:"Whispers of Indigo",src:"https://cdn.pixabay.com/download/audio/2021/11/17/audio_37b0376f70.mp3?filename=ethereal-piano-ambient-11007.mp3"},{title:"Teacup Reverie",src:"https://cdn.pixabay.com/download/audio/2021/09/15/audio_5240a7d2bb.mp3?filename=gentle-ambient-piano-9917.mp3"},{title:"Steam & Strings",src:"https://cdn.pixabay.com/download/audio/2022/03/02/audio_efb6790e64.mp3?filename=string-ambient-10367.mp3"},{title:"Parlour Waltz",src:"https://cdn.pixabay.com/download/audio/2022/10/04/audio_08e8f63160.mp3?filename=calm-inspiring-piano-ambient-12143.mp3"}];
-let currentTrack=parseInt(localStorage.getItem('lastTrack'))||0;
-let audio=new Audio();audio.loop=true;audio.volume=0.5;
-const trackList=document.getElementById('trackList');
-tracks.forEach((t,i)=>{const div=document.createElement('div');div.classList.add('track');div.textContent=t.title;div.onclick=()=>{loadTrack(i);playTrack();};trackList.appendChild(div);});
-const playBtn=document.getElementById('playPause');const nextBtn=document.getElementById('nextTrack');const prevBtn=document.getElementById('prevTrack');const vol=document.getElementById('volume');
-playBtn.onclick=()=>{if(audio.paused)playTrack();else pauseTrack();};
-nextBtn.onclick=()=>{changeTrack(1);};
-prevBtn.onclick=()=>{changeTrack(-1);};
-vol.oninput=()=>{audio.volume=vol.value;};
-function loadTrack(i){currentTrack=i;localStorage.setItem('lastTrack',currentTrack);audio.src=tracks[i].src;document.querySelectorAll('.track').forEach((t,idx)=>{t.classList.toggle('active', idx===i);});}
-function playTrack(){if(!audio.src)loadTrack(currentTrack);audio.play();playBtn.textContent='⏸';}
-function pauseTrack(){audio.pause();playBtn.textContent='▶';}
-function changeTrack(step){currentTrack=(currentTrack+step+tracks.length)%tracks.length;loadTrack(currentTrack);playTrack();}
-closeDrawerBtn.onclick=()=>{closeDrawer();}
-function openDrawer(){drawer.classList.add('open');loadTrack(currentTrack);playTrack();if(!notesReleased){releaseNotes();notesReleased=true;}}
-function closeDrawer(){drawer.classList.remove('open');pauseTrack();}
-
-// === Floating Notes ===
-function playChime(){const chime=new Audio("https://cdn.pixabay.com/download/audio/2021/09/20/audio_89c2b672c5.mp3?filename=soft-bell-10040.mp3");chime.play();}
-let notesReleased=false;
-function releaseNotes(){const icons=['🎵','🎶'];for(let i=0;i<8;i++){const note=document.createElement('div');note.classList.add('note');note.textContent=icons[Math.floor(Math.random()*icons.length)];note.style.left=(window.innerWidth-100+Math.random()*80)+'px';note.style.bottom='50px';note.style.animationDelay=(i*0.2)+'s';document.body.appendChild(note);setTimeout(()=>note.remove(),4000);}}
-if(musicUnlocked) openDrawer();
-
-// === Reset Parlour ===
-document.getElementById('resetParlour').onclick=()=>{if(confirm("Are you sure you wish to reset the Parlour? All progress will be lost.")){localStorage.clear();location.reload();}}
 </script>
 </body>
 </html>

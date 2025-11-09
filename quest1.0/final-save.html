@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miss Poppins’ Parlour of Calm</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Playfair+Display&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #2d275a, #325d7f, #3c8c85);
+  color: #f2f2f2;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+}
+
+/* Virtue Shelf */
+#virtueShelf {
+  width: 80px;
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 40px;
+}
+.virtue {
+  font-size: 2rem;
+  margin: 12px 0;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.virtue:hover { transform: scale(1.2); filter: drop-shadow(0 0 6px gold); }
+.virtue.completed::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: gold;
+  animation: sparkle 1.5s ease;
+}
+@keyframes sparkle {
+  from {opacity:1; transform: scale(1);}
+  to {opacity:0; transform: scale(2);}
+}
+
+/* Chat area */
+#chatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  overflow: hidden;
+  position: relative;
+}
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+.message {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  max-width: 70%;
+  line-height: 1.4;
+}
+.miss { background: rgba(144,100,200,0.3); align-self: flex-start; }
+.user { background: rgba(255,255,255,0.2); align-self: flex-end; }
+#inputBox {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+#inputBox input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+}
+#inputBox button {
+  margin-left: 10px;
+  padding: 10px 16px;
+  background: #8b68d6;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+#inputBox button:hover { background: #a58be3; }
+
+/* Lore Popup */
+.lore-popup {
+  display: none;
+  position: fixed;
+  z-index: 20;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(20, 10, 30, 0.7);
+  backdrop-filter: blur(2px);
+  justify-content: center;
+  align-items: center;
+}
+.lore-content {
+  background: #1a1b3a;
+  color: #e6e6f0;
+  border: 1px solid #b38ef5;
+  border-radius: 10px;
+  padding: 1rem;
+  width: 80%;
+  max-width: 700px;
+  box-shadow: 0 0 20px rgba(200,150,255,0.3);
+  position: relative;
+}
+.lore-content iframe {
+  width: 100%;
+  height: 400px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+.close-popup {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  font-size: 1.5rem;
+  color: #b38ef5;
+  cursor: pointer;
+}
+.close-popup:hover { color: #fff; }
+
+/* Drawer of Melody */
+#musicDrawer {
+  position: fixed;
+  top: 0;
+  right: -340px;
+  width: 320px;
+  height: 100%;
+  background: linear-gradient(135deg, #2b1a45, #411a56);
+  box-shadow: -4px 0 20px rgba(0,0,0,0.4);
+  color: #eee;
+  transition: right 0.8s ease;
+  z-index: 15;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Patrick Hand', cursive;
+}
+#musicDrawer.open { right: 0; }
+#drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.4rem;
+  border-bottom: 1px solid #666;
+  padding-bottom: 4px;
+}
+.track-list {
+  margin-top: 1rem;
+  flex: 1;
+}
+.track {
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.track.active { color: gold; }
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+.controls button {
+  background: #8b68d6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.controls button:hover { background: #a58be3; }
+#volume { width: 80px; }
+
+/* Floating notes */
+.note {
+  position: fixed;
+  font-size: 1.5rem;
+  animation: floatNote 4s ease forwards;
+  opacity: 0.8;
+  z-index: 30;
+}
+@keyframes floatNote {
+  0% {transform: translateY(0); opacity: 1;}
+  100% {transform: translateY(-100px); opacity: 0;}
+}
+</style>
+</head>
+
+<body>
+<div id="virtueShelf">
+  <div id="v1" class="virtue">☁️</div>
+  <div id="v2" class="virtue">🔥</div>
+  <div id="v3" class="virtue">🪞</div>
+  <div id="v4" class="virtue">🌷</div>
+  <div id="v5" class="virtue">✨</div>
+</div>
+
+<div id="chatArea">
+  <div id="chat"></div>
+  <div id="inputBox">
+    <input id="userInput" placeholder="Type your message here..." />
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<!-- Lore Popup -->
+<div id="lorePopup" class="lore-popup">
+  <div class="lore-content">
+    <span class="close-popup">&times;</span>
+    <div id="loreMessage"></div>
+    <iframe id="loreFrame" src=""></iframe>
+  </div>
+</div>
+
+<!-- Drawer of Melody -->
+<div id="musicDrawer">
+  <div id="drawerHeader">
+    <span>Drawer of Melody</span>
+    <span id="closeDrawer" style="cursor:pointer;">×</span>
+  </div>
+  <div class="track-list" id="trackList"></div>
+  <div class="controls">
+    <button id="prevTrack">⏮</button>
+    <button id="playPause">⏸</button>
+    <button id="nextTrack">⏭</button>
+    <input type="range" id="volume" min="0" max="1" step="0.05" value="0.5">
+  </div>
+</div>
+
+<script>
+// === Chat Functions ===
+const chat = document.getElementById('chat');
+const input = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function addMessage(text, sender='miss') {
+  const msg = document.createElement('div');
+  msg.classList.add('message', sender);
+  msg.innerHTML = text;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// Initialize chat greeting
+if(!localStorage.getItem('chatStarted')){
+  addMessage("Spit-spot! I’m Miss Poppins, your whimsical guide. Would you like to begin a Quest or simply chat awhile over tea?<br><small>✨ Tip: Type <b>begin quest</b> or <b>start adventure</b> to set off. Or tap any glowing cup on the shelf for a surprise.</small>", "miss");
+  localStorage.setItem('chatStarted','true');
+}
+
+// === Virtue Shelf ===
+const virtueLore = {
+  v1:{title:"Etiquette",text:"☁️ Good manners are love made visible.",link:"https://en.wikipedia.org/wiki/Etiquette"},
+  v2:{title:"Lore",text:"🔥 Legends are but truths told sideways.",link:"https://www.gutenberg.org/ebooks/14568"},
+  v3:{title:"Herb Garden",text:"🪞Chamomile soothes both stomach and spirit.",link:"https://www.herbalgram.org/"},
+  v4:{title:"Proverbs",text:"🌷‘Kind words are short and easy to speak, but their echoes are endless.’",link:"https://www.phrases.org.uk/meanings/proverbs.html"},
+  v5:{title:"Poetry",text:"✨‘The world is full of magical things patiently waiting for our senses to grow sharper.’",link:"https://www.poetryfoundation.org/"}
+};
+
+// Restore completed virtues
+const completedVirtues = JSON.parse(localStorage.getItem('completedVirtues') || "[]");
+completedVirtues.forEach(id=>{
+  const v=document.getElementById(id);
+  if(v) v.classList.add('completed');
+});
+
+document.querySelectorAll('.virtue').forEach(v=>{
+  v.addEventListener('click',()=>{
+    const lore=virtueLore[v.id];
+    if(lore){
+      document.getElementById("loreMessage").innerHTML=`<h3>${lore.title}</h3><p>${lore.text}</p>`;
+      document.getElementById("loreFrame").src=lore.link;
+      document.getElementById("lorePopup").style.display="flex";
+      v.classList.add('completed');
+      // Save progress
+      if(!completedVirtues.includes(v.id)){
+        completedVirtues.push(v.id);
+        localStorage.setItem('completedVirtues', JSON.stringify(completedVirtues));
+      }
+      setTimeout(()=>v.classList.remove('completed'),1500);
+    }
+  });
+});
+document.querySelector('.close-popup').addEventListener('click',()=>{
+  document.getElementById("lorePopup").style.display="none";
+  document.getElementById("loreFrame").src="";
+});
+
+// === Chat Handling ===
+sendBtn.onclick = () => handleInput();
+input.addEventListener("keypress", e => { if(e.key==="Enter") handleInput(); });
+
+let riddleAsked = false;
+let musicUnlocked = JSON.parse(localStorage.getItem('musicUnlocked') || "false");
+
+function handleInput(){
+  const text = input.value.trim();
+  if(!text) return;
+  addMessage(text,'user');
+  input.value='';
+  processInput(text.toLowerCase());
+}
+
+function processInput(text){
+  if(text.includes("begin quest")) {
+    addMessage("Splendid! We shall begin with calm — the very first cup of virtue.", "miss");
+    return;
+  }
+  if(!musicUnlocked && riddleAsked){
+    if(text === "thank you" || text === "thankyou"){
+      addMessage("Splendidly polite! The Drawer of Melody opens for you — may it serenade your splendid soul.", "miss");
+      musicUnlocked=true;
+      localStorage.setItem('musicUnlocked','true');
+      playChime();
+      openDrawer();
+    } else {
+      addMessage("Oh, nearly! Manners are the true key to music — try once more.", "miss");
+    }
+    return;
+  }
+  if(text.includes("music") || text.includes("song")){
+    if(!riddleAsked && !musicUnlocked){
+      askRiddle();
+      return;
+    }
+  }
+  addMessage("Hmm, quite so. Would you like to talk about tea, virtues, or perhaps music?", "miss");
+}
+
+function askRiddle(){
+  addMessage("Mind your manners, my dear: what must one always remember to say when given a cup of tea?", "miss");
+  riddleAsked=true;
+}
+
+// === Music Drawer ===
+const drawer=document.getElementById('musicDrawer');
+const closeDrawerBtn=document.getElementById('closeDrawer');
+
+const tracks=[
+  {title:"Whispers of Indigo", src:"https://cdn.pixabay.com/download/audio/2021/11/17/audio_37b0376f70.mp3?filename=ethereal-piano-ambient-11007.mp3"},
+  {title:"Teacup Reverie", src:"https://cdn.pixabay.com/download/audio/2021/09/15/audio_5240a7d2bb.mp3?filename=gentle-ambient-piano-9917.mp3"},
+  {title:"Steam & Strings", src:"https://cdn.pixabay.com/download/audio/2022/03/02/audio_efb6790e64.mp3?filename=string-ambient-10367.mp3"},
+  {title:"Parlour Waltz", src:"https://cdn.pixabay.com/download/audio/2022/10/04/audio_08e8f63160.mp3?filename=calm-inspiring-piano-ambient-12143.mp3"}
+];
+let currentTrack = parseInt(localStorage.getItem('lastTrack')) || 0;
+let audio=new Audio();
+audio.loop=true;
+audio.volume=0.5;
+
+const trackList=document.getElementById('trackList');
+tracks.forEach((t,i)=>{
+  const div=document.createElement('div');
+  div.classList.add('track');
+  div.textContent=t.title;
+  div.onclick=()=>{loadTrack(i); playTrack();};
+  trackList.appendChild(div);
+});
+
+const playBtn=document.getElementById('playPause');
+const nextBtn=document.getElementById('nextTrack');
+const prevBtn=document.getElementById('prevTrack');
+const vol=document.getElementById('volume');
+
+playBtn.onclick=()=>{ if(audio.paused) playTrack(); else pauseTrack(); };
+nextBtn.onclick=()=>{changeTrack(1);};
+prevBtn.onclick=()=>{changeTrack(-1);};
+vol.oninput=()=>{ audio.volume=vol.value; };
+
+function loadTrack(i){
+  currentTrack=i;
+  localStorage.setItem('lastTrack', currentTrack);
+  audio.src=tracks[i].src;
+  document.querySelectorAll('.track').forEach((t,idx)=>{
+    t.classList.toggle('active', idx===i);
+  });
+}
+function playTrack(){
+  if(!audio.src) loadTrack(currentTrack);
+  audio.play();
+  playBtn.textContent='⏸';
+}
+function pauseTrack(){
+  audio.pause();
+  playBtn.textContent='▶';
+}
+function changeTrack(step){
+  currentTrack=(currentTrack+step+tracks.length)%tracks.length;
+  loadTrack(currentTrack);
+  playTrack();
+}
+closeDrawerBtn.onclick=()=>{ closeDrawer(); };
+
+function openDrawer(){
+  drawer.classList.add('open');
+  loadTrack(currentTrack);
+  playTrack();
+  if(!notesReleased){ releaseNotes(); notesReleased=true; }
+}
+function closeDrawer(){
+  drawer.classList.remove('open');
+  pauseTrack();
+}
+
+// === Floating Notes ===
+function playChime(){
+  const chime=new Audio("https://cdn.pixabay.com/download/audio/2021/09/20/audio_89c2b672c5.mp3?filename=soft-bell-10040.mp3");
+  chime.play();
+}
+let notesReleased=false;
+function releaseNotes(){
+  const icons=['🎵','🎶'];
+  for(let i=0;i<8;i++){
+    const note=document.createElement('div');
+    note.classList.add('note');
+    note.textContent=icons[Math.floor(Math.random()*icons.length)];
+    note.style.left=(window.innerWidth-100+Math.random()*80)+'px';
+    note.style.bottom='50px';
+    note.style.animationDelay=(i*0.2)+'s';
+    document.body.appendChild(note);
+    setTimeout(()=>note.remove(),4000);
+  }
+}
+
+// === Restore Drawer if previously unlocked ===
+if(musicUnlocked) openDrawer();
+</script>
+</body>
+</html>

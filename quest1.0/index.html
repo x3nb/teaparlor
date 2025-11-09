@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miss Poppins’ Parlour of Calm</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Crimson+Text&display=swap');
+
+  body{
+    margin:0;
+    font-family:'Crimson Text',serif;
+    background:linear-gradient(180deg,#1d1145 0%,#245d68 60%,#297b74 100%);
+    color:#f3f3f3;
+    overflow:hidden;
+  }
+
+  header{
+    text-align:center;
+    padding:15px;
+    font-family:'Playfair Display',serif;
+    font-size:1.5em;
+    background:rgba(255,255,255,0.05);
+    letter-spacing:1px;
+  }
+
+  #container{
+    display:flex;
+    height:calc(100vh - 60px);
+  }
+
+  /* virtue shelf */
+  #virtueShelf{
+    width:120px;
+    position:relative;
+    background:rgba(0,0,0,0.3);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    border-right:2px solid rgba(255,255,255,0.05);
+    overflow:hidden;
+  }
+
+  .bookshelf-bg::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:url('https://i.imgur.com/6zVLc3E.png') center/cover no-repeat;
+    opacity:0.05;
+    pointer-events:none;
+  }
+
+  .virtue{
+    width:60px;
+    height:60px;
+    border:2px solid #fff;
+    border-radius:50%;
+    margin:10px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    position:relative;
+    transition:all .4s ease;
+  }
+
+  .virtue.completed{
+    background:radial-gradient(circle at top,#f7e296,#b388ff);
+    box-shadow:0 0 10px #f7e296;
+  }
+
+  /* steam animation */
+  .steam{
+    position:absolute;
+    bottom:70%;
+    width:10px;
+    height:30px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.3);
+    animation:steamRise 3s linear infinite;
+    opacity:0;
+  }
+  .completed .steam{opacity:1;}
+  @keyframes steamRise{
+    0%{transform:translateY(20px) scale(0.8);opacity:0;}
+    50%{opacity:0.6;}
+    100%{transform:translateY(-30px) scale(1.1);opacity:0;}
+  }
+
+  /* sparkles */
+  .sparkle{
+    position:absolute;
+    width:4px;height:4px;
+    background:white;
+    border-radius:50%;
+    opacity:.8;
+    animation:sparkleFloat 5s linear infinite;
+  }
+  @keyframes sparkleFloat{
+    0%{transform:translateY(0) scale(0.8);opacity:0.6;}
+    50%{opacity:1;}
+    100%{transform:translateY(-60px) scale(0.5);opacity:0;}
+  }
+
+  /* chat area */
+  #chatArea{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(6px);
+  }
+
+  #chat{
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+  }
+
+  .message{
+    display:flex;
+    margin:8px 0;
+    align-items:flex-start;
+  }
+  .message.user{justify-content:flex-end;}
+  .bubble{
+    padding:12px 16px;
+    border-radius:14px;
+    max-width:70%;
+  }
+  .message.user .bubble{
+    background:linear-gradient(145deg,#1fbfb8,#2cb7a1);
+    color:white;
+  }
+  .message.miss .bubble{
+    background:linear-gradient(145deg,#5f3c9c,#7c4fa1);
+    color:#f8f0ff;
+  }
+  .avatar{font-size:30px;margin:0 8px;}
+
+  #inputBar{
+    display:flex;
+    padding:10px;
+    background:rgba(0,0,0,0.2);
+  }
+  #userInput{
+    flex:1;
+    border:none;
+    border-radius:8px;
+    padding:10px;
+    font-size:16px;
+  }
+  #sendBtn{
+    margin-left:10px;
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(90deg,#7c4fa1,#2cb7a1);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+  }
+
+  /* fortune box */
+  #fortuneBox{
+    position:absolute;
+    bottom:80px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,0.15);
+    padding:12px 20px;
+    border-radius:10px;
+    font-style:italic;
+    opacity:0;
+    transition:opacity 1s ease;
+  }
+  #fortuneBox.show{opacity:1;}
+</style>
+</head>
+<body>
+<header>Miss Poppins’ Parlour of Calm</header>
+
+<div id="container">
+  <div id="virtueShelf" class="bookshelf-bg">
+    <div class="virtue" id="v1" title="Calm">☁️<div class="steam"></div></div>
+    <div class="virtue" id="v2" title="Courage">🔥<div class="steam"></div></div>
+    <div class="virtue" id="v3" title="Truth">🪞<div class="steam"></div></div>
+    <div class="virtue" id="v4" title="Kindness">🌷<div class="steam"></div></div>
+    <div class="virtue" id="v5" title="Grace">✨<div class="steam"></div></div>
+  </div>
+
+  <div id="chatArea">
+    <div id="chat"></div>
+    <div id="fortuneBox"></div>
+    <div id="inputBar">
+      <input id="userInput" placeholder="Type here..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const fortunes=[
+  "A calm heart brews the clearest wisdom.",
+  "Grace is the art of moving gently through time.",
+  "Speak softly, for kind words echo farthest.",
+  "Even a whisper of gratitude changes the room.",
+  "Patience, dear—tea and truth both steep slowly."
+];
+
+const etiquetteList=[
+  "Greet one person warmly, as if your smile were a gift.",
+  "Pause three seconds before replying—let grace lead the way.",
+  "Write a note of gratitude, even if you never send it.",
+  "Stand tall today—confidence is quiet refinement.",
+  "Listen without interruption once—it’s the rarest courtesy."
+];
+/* --- clickable virtue lore --- */
+const virtueLore = {
+  v1: {
+    title: "Etiquette",
+    text: "☁️ A gentle reminder: good manners are love made visible.  \nRead a little more about the art of courtesy here:",
+    link: "https://en.wikipedia.org/wiki/Etiquette"
+  },
+  v2: {
+    title: "Lore",
+    text: "🔥 Legends are but truths told sideways.  \nPeruse a tale of courage and kindness:",
+    link: "https://www.gutenberg.org/ebooks/14568" // example fairy-tale collection
+  },
+  v3: {
+    title: "Herb Garden",
+    text: "🪞 Did you know chamomile soothes both stomach and spirit?  \nFind a few lovely herbal blends:",
+    link: "https://www.herbalgram.org/"
+  },
+  v4: {
+    title: "Proverbs",
+    text: "🌷 ‘Kind words are short and easy to speak, but their echoes are truly endless.’  \nDiscover more sayings:",
+    link: "https://www.phrases.org.uk/meanings/proverbs.html"
+  },
+  v5: {
+    title: "Poetry",
+    text: "✨ ‘The world is full of magical things patiently waiting for our senses to grow sharper.’  \nEnjoy a verse or two:",
+    link: "https://www.poetryfoundation.org/"
+  }
+};
+
+/* attach click events to virtue icons */
+document.querySelectorAll('.virtue').forEach(v=>{
+  v.addEventListener('click',()=>{
+    const id=v.id;
+    const lore=virtueLore[id];
+    if(lore){
+      addMessage(`<b>${lore.title}</b><br>${lore.text} <a href="${lore.link}" target="_blank" style="color:#b2f2ff;">${lore.link}</a>`,'miss');
+      showFortune();
+      // small steam puff
+      v.classList.add('completed');
+      setTimeout(()=>v.classList.remove('completed'),1500);
+    }
+  });
+});
+
+
+let mode="chat",level=0,awaitingEtiquette=false;
+
+function addMessage(text,sender){
+  const chat=document.getElementById('chat');
+  const msg=document.createElement('div');
+  msg.className="message "+sender;
+  const avatar=document.createElement('span');
+  avatar.className="avatar";
+  avatar.textContent= sender==="user"?"🍵":"☂️";
+  const bubble=document.createElement('div');
+  bubble.className="bubble";
+  bubble.innerHTML=text;
+  if(sender==="user"){msg.appendChild(bubble);msg.appendChild(avatar);}
+  else{msg.appendChild(avatar);msg.appendChild(bubble);}
+  chat.appendChild(msg);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+function showFortune(){
+  const box=document.getElementById('fortuneBox');
+  box.textContent=fortunes[Math.floor(Math.random()*fortunes.length)];
+  box.classList.add('show');
+  setTimeout(()=>box.classList.remove('show'),6000);
+}
+
+function completeVirtue(n){
+  const v=document.getElementById('v'+n);
+  if(v){v.classList.add('completed');}
+}
+
+function processInput(txt){
+  const t=txt.toLowerCase();
+
+  if(awaitingEtiquette){
+    awaitingEtiquette=false;
+    addMessage("Lovely manners, dear. Now, on we go!",'miss');
+    showFortune();
+    nextLevel();
+    return;
+  }
+
+  if(t.includes('quest')||t.includes('adventure')||t.includes('begin')){
+    mode="quest";level=1;
+    addMessage("Spit-spot! Let us begin your Quest. Level 1 — The Cup of Calm.<br>Task: Take a deep breath and let the world slow. When ready, type <b>level 1 complete</b>.",'miss');
+    return;
+  }
+
+  if(mode==="quest" && t.includes('level')){
+    if(t.includes('1 complete')){completeVirtue(1);betweenLevels();}
+    if(t.includes('2 complete')){completeVirtue(2);betweenLevels();}
+    if(t.includes('3 complete')){completeVirtue(3);betweenLevels();}
+    if(t.includes('4 complete')){completeVirtue(4);betweenLevels();}
+    if(t.includes('5 complete')){completeVirtue(5);addMessage("My, you’ve finished all your lessons with such poise!",'miss');showFortune();}
+    return;
+  }
+
+  if(t.includes('weather')||t.includes('rain')){
+    addMessage("Rain or shine, dear, a cup of calm never goes amiss.",'miss');
+    return;
+  }
+
+  if(t.includes('tea')){
+    addMessage("We’ve Black, Chai, Matcha, and a dainty Earl Grey. Which calls to your mood?",'miss');
+    return;
+  }
+
+  addMessage("Quite so, dear. Carry on.",'miss');
+}
+
+function betweenLevels(){
+  if(level<5){
+    level++;
+    awaitingEtiquette=true;
+    const etiquetteQ=etiquetteList[Math.floor(Math.random()*etiquetteList.length)];
+    addMessage(`Would you care for a touch of etiquette before we carry on, dear?<br><i>${etiquetteQ}</i><br>When you’ve done so, simply reply anything at all.`,`miss`);
+  }
+}
+
+function nextLevel(){
+  const texts=[
+    "Level 2 — The Brew of Bravery.<br>Task: Take one small bold action and do it with grace. When done, type <b>level 2 complete</b>.",
+    "Level 3 — The Teapot of Truth.<br>Task: Write one belief that feels heavy, and one that feels light. Keep the light one. When ready, type <b>level 3 complete</b>.",
+    "Level 4 — The Kettle of Kindness.<br>Task: Do one gentle act for someone today. When done, type <b>level 4 complete</b>.",
+    "Level 5 — The Brew of Becoming.<br>Task: Reflect on how you’ve grown, and sip that pride slowly. Type <b>level 5 complete</b> when you’re ready."
+  ];
+  if(level-1 < texts.length){addMessage(texts[level-2],'miss');}
+}
+
+document.getElementById('sendBtn').onclick=()=>{
+  const inp=document.getElementById('userInput');
+  const val=inp.value.trim();
+  if(!val)return;
+  addMessage(val,'user');
+  processInput(val);
+  inp.value='';
+};
+document.getElementById('userInput').addEventListener('keypress',e=>{
+  if(e.key==='Enter')document.getElementById('sendBtn').click();
+});
+
+/* sparkles */
+for(let i=0;i<15;i++){
+  const s=document.createElement('div');
+  s.className='sparkle';
+  s.style.left=Math.random()*100+'px';
+  s.style.bottom=Math.random()*100+'px';
+  s.style.animationDelay=(Math.random()*5)+'s';
+  document.getElementById('virtueShelf').appendChild(s);
+}
+
+/* greeting */
+addMessage(
+  "Spit-spot! I’m Miss Poppins, your whimsical guide. Would you like to begin a Quest or simply chat awhile over tea?<br><small>✨ Tip: Type <b>begin quest</b> or <b>start adventure</b> to set off on your first journey.</small>",
+  "miss"
+);
+setTimeout(() => {
+  addMessage(
+    "Just a gentle nudge, dear — shall we begin your first Quest? Simply say <b>begin quest</b> when you’re ready.",
+    "miss"
+  );
+}, 8000);
+
+
+</script>
+</body>
+</html>

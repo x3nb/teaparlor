@@ -3,280 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whimsical Parlour Chat Adventure</title>
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+<title>Miss Poppins Mindfulness Quest Chat</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Gloock&display=swap');
   body {
-    margin:0;
-    font-family:'Patrick Hand', cursive;
-    background: url('https://i.imgur.com/qM6RZKq.png') no-repeat center top;
-    background-size: cover;
+    margin: 0;
+    font-family: 'Patrick Hand', cursive;
+    background: linear-gradient(to bottom, #4B0082, #1E3A5F);
     color: #fff;
     overflow-x: hidden;
   }
-
-  /* Chat area */
-  #chat-container {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 600px;
-    height: 350px;
-    background: rgba(25,0,50,0.7);
-    border-radius: 15px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    box-shadow: 0 0 15px #7b68ee;
-  }
-
-  .chat-message {
-    margin: 5px 0;
-    padding: 8px 12px;
+  .chat-container {
+    width: 400px;
+    max-width: 90%;
+    margin: 40px auto;
+    background: rgba(0,0,0,0.6);
     border-radius: 12px;
-    max-width: 80%;
-    background: rgba(255,255,255,0.1);
-  }
-
-  .chat-message.user {
-    align-self: flex-end;
-    background: rgba(100,149,237,0.7);
-  }
-
-  .chat-message.bot {
-    align-self: flex-start;
-    background: rgba(138,43,226,0.6);
-  }
-
-  #user-input {
-    margin-top: auto;
-    display:flex;
-  }
-
-  #user-input input {
-    flex:1;
-    padding:10px;
-    border-radius:8px 0 0 8px;
-    border:none;
-    outline:none;
-    font-family:'Patrick Hand', cursive;
-  }
-
-  #user-input button {
-    padding:10px;
-    border:none;
-    background: #7b68ee;
-    color:white;
-    cursor:pointer;
-    border-radius:0 8px 8px 0;
-    font-family:'Patrick Hand', cursive;
-  }
-
-  /* Virtues shelf */
-  #virtue-shelf {
-    position: fixed;
-    top: 20%;
-    right: 10px;
-    display:flex;
-    flex-direction: column;
-    gap: 15px;
-    z-index: 2;
-  }
-
-  .virtue-icon {
-    width:50px;
-    height:50px;
-    background: rgba(255,255,255,0.2);
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size: 24px;
-    cursor:pointer;
+    padding: 20px;
+    box-shadow: 0 0 20px #6a0dad;
     position: relative;
   }
-
-  /* Floating Steam */
-  .steam {
-    position:fixed; bottom:50px; left:50px; width:20px; height:20px;
-    background:rgba(255,255,255,0.2); border-radius:50%;
-    animation: rise 6s infinite ease-in;
-    filter:blur(4px);
-    z-index:0;
+  .message {
+    margin: 10px 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
   }
-  @keyframes rise {
-    0%{transform:translateY(0) scale(1);opacity:0.4;}
-    50%{opacity:0.8;}
-    100%{transform:translateY(-200px) scale(1.5);opacity:0;}
+  .bot { background: rgba(255,255,255,0.1); align-self: flex-start; }
+  .user { background: rgba(255,255,255,0.3); align-self: flex-end; }
+  #chat-log {
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 10px;
   }
-
-  /* Sparkles */
-  .sparkle {
-    position:fixed; width:5px; height:5px; background:white;
-    border-radius:50%; opacity:0.8;
-    animation: twinkle 3s infinite;
-    z-index:1;
-  }
-  @keyframes twinkle {
-    0%,100%{opacity:0.2; transform:scale(1);}
-    50%{opacity:1; transform:scale(1.5);}
-  }
-
-  /* Music Drawer */
-  #music-drawer {
-    position: fixed;
-    top:50%;
-    right: -250px;
-    transform: translateY(-50%);
-    width: 220px;
-    background: rgba(50,0,100,0.9);
-    border-radius: 12px 0 0 12px;
+  input[type=text] {
+    width: 100%;
     padding: 10px;
-    transition: right 0.5s ease;
-    font-family:'Patrick Hand', cursive;
-    box-shadow: -2px 2px 15px #7b68ee;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+  }
+  .virtue-shelf {
+    position: fixed;
+    right: 10px;
+    top: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     z-index: 3;
   }
-
-  #music-drawer h3 {
-    margin-top:0; font-size:18px; text-align:center; font-family:'Patrick Hand', cursive;
+  .virtue-icon {
+    width: 50px; height: 50px;
+    cursor: pointer;
+    position: relative;
   }
-
-  .music-track {
-    margin:8px 0;
-    cursor:pointer;
+  .steam {
+    position: absolute;
+    width: 10px; height: 20px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    animation: rise 3s infinite ease-in-out;
   }
-
-  #music-drawer.open { right: 0; }
-
+  @keyframes rise {
+    0% { transform: translateY(0) scale(1); opacity: 0.5; }
+    50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+    100% { transform: translateY(-40px) scale(1); opacity: 0; }
+  }
+  #virtue-popup {
+    display:none; position:fixed; top:50%; left:50%;
+    transform:translate(-50%, -50%);
+    background: rgba(0,0,50,0.9); padding: 20px;
+    border-radius:12px; color:white; max-width:300px; text-align:center; z-index:5;
+  }
+  #virtue-popup a { color:#FFD700; text-decoration:none; }
+  #virtue-popup button { margin-top:10px; padding:5px 10px; border:none; border-radius:6px; cursor:pointer; }
+  /* Drawer */
+  #music-drawer {
+    position: fixed;
+    right: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: rgba(75,0,130,0.95);
+    transition: right 0.5s;
+    padding: 20px;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    z-index:4;
+    color:white;
+    font-family: 'Patrick Hand', cursive;
+  }
+  .music-track { margin: 15px 0; }
+  .play-button { cursor:pointer; padding:5px 10px; background:#fff; color:#4B0082; border-radius:5px; }
 </style>
 </head>
 <body>
 
-<!-- Virtues Shelf -->
-<div id="virtue-shelf">
-  <div class="virtue-icon" title="Etiquette">🫖</div>
-  <div class="virtue-icon" title="Lore">📚</div>
-  <div class="virtue-icon" title="Herb Garden">🌿</div>
-  <div class="virtue-icon" title="Proverbs & Poetry">🖋️</div>
+<div class="chat-container">
+  <div id="chat-log"></div>
+  <input type="text" id="user-input" placeholder="Spit-spot! Type your thoughts or quest answer here...">
 </div>
 
-<!-- Chat container -->
-<div id="chat-container">
-  <div class="chat-message bot">Spit-spot! Welcome to the Parlour. Tea, wisdom, or adventure today?</div>
-  <div id="user-input">
-    <input type="text" id="user-text" placeholder="Type your reply...">
-    <button id="send-btn">Enter</button>
-  </div>
+<!-- Virtue Shelf -->
+<div class="virtue-shelf">
+  <img src="https://via.placeholder.com/50?text=Etiquette" class="virtue-icon" title="Etiquette">
+  <img src="https://via.placeholder.com/50?text=Lore" class="virtue-icon" title="Lore">
+  <img src="https://via.placeholder.com/50?text=Herb+Garden" class="virtue-icon" title="Herb Garden">
+  <img src="https://via.placeholder.com/50?text=Proverbs" class="virtue-icon" title="Proverbs & Poetry">
+</div>
+
+<!-- Virtue Popup -->
+<div id="virtue-popup">
+  <span id="virtue-popup-text"></span><br><br>
+  <button onclick="closeVirtuePopup()">Close</button>
 </div>
 
 <!-- Music Drawer -->
 <div id="music-drawer">
   <h3>Theme Music</h3>
-  <div class="music-track" data-src="track1.mp3">Gentle Chimes</div>
-  <div class="music-track" data-src="track2.mp3">Soft Strings</div>
-  <div class="music-track" data-src="track3.mp3">Ambient Flow</div>
-  <div class="music-track" data-src="track4.mp3">Evening Calm</div>
-  <audio id="music-player" loop></audio>
+  <div class="music-track"><span>Gentle Chimes</span> <button class="play-button" onclick="playTrack('track1')">Play</button></div>
+  <div class="music-track"><span>Soft Strings</span> <button class="play-button" onclick="playTrack('track2')">Play</button></div>
+  <div class="music-track"><span>Ambient Breeze</span> <button class="play-button" onclick="playTrack('track3')">Play</button></div>
+  <div class="music-track"><span>Mellow Twilight</span> <button class="play-button" onclick="playTrack('track4')">Play</button></div>
 </div>
 
+<audio id="track1" src="track1.mp3"></audio>
+<audio id="track2" src="track2.mp3"></audio>
+<audio id="track3" src="track3.mp3"></audio>
+<audio id="track4" src="track4.mp3"></audio>
+
 <script>
-  const chatContainer = document.getElementById('chat-container');
-  const userInput = document.getElementById('user-text');
-  const sendBtn = document.getElementById('send-btn');
-  const musicDrawer = document.getElementById('music-drawer');
-  const musicPlayer = document.getElementById('music-player');
+const chatLog = document.getElementById('chat-log');
+const userInput = document.getElementById('user-input');
+let questStage = 1;
+let musicDrawerOpen = false;
 
-  // Helper: add chat message
-  function addMessage(text, sender='bot'){
-    const msg = document.createElement('div');
-    msg.classList.add('chat-message', sender);
-    msg.innerText=text;
-    chatContainer.insertBefore(msg, document.getElementById('user-input'));
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
+function addMessage(text, sender='bot') {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + sender;
+  msg.innerHTML = text;
+  chatLog.appendChild(msg);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
 
-  // Music Drawer Riddle Logic
-  let riddleAnswered=false;
-  const mannersRiddle = "If I offer my hand politely, what is my next step?";
-  const riddleAnswer = "bow";
+// Initial greeting
+addMessage("Good day, my dear! Spit-spot! Are we off on a mindfulness quest, wish for tea, or a little chatter today?");
 
-  function checkRiddle(input){
-    if(input.toLowerCase().includes(riddleAnswer)){
-      riddleAnswered=true;
-      musicDrawer.classList.add('open');
-      addMessage("Splendid! The music drawer slides open with gentle notes.", 'bot');
-    } else {
-      addMessage("Hmm, not quite. Consider manners carefully.", 'bot');
-    }
-  }
-
-  // Chat responses
-  function botResponse(input){
-    const text=input.toLowerCase();
-    if(text.includes('tea')){
-      addMessage("Ah, tea! Shall we try Black, Matcha, Chai, or Boba?", 'bot');
-    } else if(text.includes('music')){
-      if(!riddleAnswered){
-        addMessage(`To unlock the music, answer this riddle: ${mannersRiddle}`, 'bot');
-      }
-    } else if(riddleAnswered && text.includes('play')){
-      musicPlayer.play();
-      addMessage("Playing the gentle ambient tunes...", 'bot');
-    } else if(text.includes('stop') || text.includes('pause')){
-      musicPlayer.pause();
-      addMessage("Music paused.", 'bot');
-    } else if(text.includes('quest')){
-      addMessage("Your adventure awaits! Choose: Level 1 - Mindfulness, Level 2 - Self-Care, Level 3 - Personal Growth.", 'bot');
-    } else {
-      // If riddle expected
-      if(!riddleAnswered && text.includes(riddleAnswer)){
-        checkRiddle(text);
-      } else {
-        addMessage("Splendid! Tell me more, dear friend.", 'bot');
-      }
-    }
-  }
-
-  // Send button and Enter key
-  sendBtn.onclick = ()=>{ 
-    const text=userInput.value;
-    if(text.trim()==='') return;
+// Handle user input
+userInput.addEventListener('keypress', function(e){
+  if(e.key==='Enter'){
+    const text = userInput.value.trim();
+    if(text==='') return;
     addMessage(text,'user');
-    botResponse(text);
     userInput.value='';
+    handleInput(text.toLowerCase());
+  }
+});
+
+// Input handler
+function handleInput(text){
+  // Music drawer riddle trigger
+  if(text.includes('music')){
+    addMessage("A manners riddle unlocks our music! Answer: 'I greet politely, what am I? (Hint: behavior)'.");
+    return;
+  }
+  if(text.includes('polite') && !musicDrawerOpen){
+    openMusicDrawer();
+    addMessage("Bravo! Music drawer slides open. Enjoy the gentle tunes.");
+    return;
   }
 
-  userInput.addEventListener("keypress", function(e){
-    if(e.key==='Enter'){ sendBtn.click(); }
+  // Quest progression
+  if(text.includes('quest')){
+    if(questStage===1){
+      addMessage("Quest 1: Take one small bold action today, and do it with grace. Once completed, type 'done'.");
+      return;
+    } else if(questStage===2){
+      addMessage("Quest 2: Reflect upon your courage. Share one moment of bravery or kindness you acted upon. Type 'done' when ready.");
+      return;
+    }
+  }
+  if(text==='done'){
+    if(questStage===1){
+      questStage=2;
+      addMessage("Splendid! You've completed Quest 1. Onward to Quest 2!");
+      return;
+    } else if(questStage===2){
+      questStage=3;
+      addMessage("Marvelous bravery! You've finished the main quests. Continue exploring tea, virtues, and reflections!");
+      return;
+    }
+  }
+
+  // Tea menu
+  if(text.includes('tea')){
+    addMessage("Select your tea: <ul><li>Black Tea</li><li>Matcha</li><li>Chai</li><li>Boba</li></ul>");
+    return;
+  }
+
+  // Default
+  addMessage("Spit-spot! Let’s carry on — chat, select tea, or mention 'quest' to continue our adventure!");
+}
+
+// Virtue icons
+const virtueIcons = document.querySelectorAll('.virtue-icon');
+const virtuePopup = document.getElementById('virtue-popup');
+const virtuePopupText = document.getElementById('virtue-popup-text');
+
+virtueIcons.forEach(icon => {
+  icon.addEventListener('click', () => {
+    const title = icon.getAttribute('title');
+    let message = '';
+    switch(title){
+      case 'Etiquette':
+        message = 'Polite gestures always brighten a room! Learn more at <a href="https://www.etiquetteguide.com" target="_blank">Etiquette Guide</a>';
+        break;
+      case 'Lore':
+        message = 'Stories from afar can inspire wisdom. Visit <a href="https://www.lorelibrary.com" target="_blank">Lore Library</a>';
+        break;
+      case 'Herb Garden':
+        message = 'Herbs have secrets for mind and body. Discover them <a href="https://www.herbology.com" target="_blank">here</a>';
+        break;
+      case 'Proverbs & Poetry':
+        message = 'Words are wings for the soul. Explore <a href="https://www.poetryfoundation.org" target="_blank">Poetry</a>';
+        break;
+      default:
+        message = 'A gentle surprise awaits!';
+    }
+    virtuePopupText.innerHTML = message;
+    virtuePopup.style.display = 'block';
   });
+});
 
-  // Music track selection
-  document.querySelectorAll('.music-track').forEach(track=>{
-    track.addEventListener('click', ()=>{
-      musicPlayer.src=track.getAttribute('data-src');
-      musicPlayer.play();
-    });
+function closeVirtuePopup(){
+  virtuePopup.style.display='none';
+}
+
+// Music drawer
+const drawer = document.getElementById('music-drawer');
+function openMusicDrawer(){
+  drawer.style.right='0';
+  musicDrawerOpen=true;
+}
+function closeMusicDrawer(){
+  drawer.style.right='-250px';
+  musicDrawerOpen=false;
+  stopAllTracks();
+}
+
+function playTrack(id){
+  stopAllTracks();
+  const track = document.getElementById(id);
+  track.play();
+}
+
+function stopAllTracks(){
+  ['track1','track2','track3','track4'].forEach(t=>{
+    const audio = document.getElementById(t);
+    audio.pause();
+    audio.currentTime=0;
   });
-
-  // Floating Steam & Sparkles
-  for(let i=0;i<8;i++){
-    let s=document.createElement('div'); s.classList.add('steam');
-    s.style.left=(50+Math.random()*50)+'px';
-    s.style.animationDelay=(Math.random()*3)+'s';
-    document.body.appendChild(s);
-  }
-
-  for(let i=0;i<15;i++){
-    let sp=document.createElement('div'); sp.classList.add('sparkle');
-    sp.style.left=(Math.random()*window.innerWidth)+'px';
-    sp.style.top=(Math.random()*window.innerHeight)+'px';
-    sp.style.animationDelay=(Math.random()*3)+'s';
-    document.body.appendChild(sp);
-  }
+}
 </script>
 </body>
 </html>
+

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Miss Poppins’ Tea Parlour ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  background: radial-gradient(circle at center, #1a1a2e, #16213e, #0f3460);
+  color: #f0e6ff;
+  overflow: hidden;
+}
+
+/* Layout */
+.parlour-container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 4rem;
+}
+
+/* Rain */
+.rain-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.raindrop {
+  position: absolute;
+  top: -10px;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #b790ff, #cdb4ff);
+  border-radius: 50%;
+  animation: fall linear infinite;
+  box-shadow: 0 0 2px #b790ff;
+}
+@keyframes fall {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(20px) translateY(100vh);
+  }
+}
+
+/* Umbrella */
+.umbrella-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  z-index: 10;
+}
+.umbrella-button svg {
+  width: 60px;
+  height: 80px;
+  fill: none;
+  stroke: #b790ff;
+  stroke-width: 2;
+  transition: transform 0.8s ease, width 0.8s ease, opacity 0.4s ease;
+}
+.umbrella-button.glow svg {
+  filter: drop-shadow(0 0 10px #cdb4ff);
+}
+
+/* Pulse while idle */
+@keyframes pulse {
+  0%,100%{filter: drop-shadow(0 0 5px #b790ff);}
+  50%{filter: drop-shadow(0 0 15px #cdb4ff);}
+}
+.umbrella-button {
+  animation: pulse 4s ease-in-out infinite;
+}
+
+/* Shimmer line (magic rise) */
+.shimmer {
+  position: absolute;
+  left: 50%;
+  bottom: 15px;
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to top, rgba(183,144,255,0.2), rgba(255,255,255,0.8));
+  border-radius: 2px;
+  transform: translateX(-50%) scaleY(0);
+  opacity: 0;
+}
+
+/* Chat */
+.chat-container {
+  position: absolute;
+  bottom: 130px;
+  width: 320px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 1.2rem;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+  box-shadow: 0 0 20px rgba(183,144,255,0.4);
+  z-index: 15;
+}
+.chat-container.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chat-header {
+  font-weight: 600;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: #d8b4ff;
+}
+.chat-message {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 0.8rem;
+  color: #f3eaff;
+}
+.chat-input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: none;
+  font-family: 'Cinzel', serif;
+  background-color: rgba(255,255,255,0.15);
+  color: #fff;
+  outline: none;
+}
+.chat-input::placeholder {
+  color: #d0c1f7;
+}
+</style>
+</head>
+<body>
+<div id="rainContainer" class="rain-container"></div>
+<div class="parlour-container">
+  <!-- Chat -->
+  <div id="chatContainer" class="chat-container">
+    <div class="chat-header">Miss Poppins</div>
+    <div class="chat-message">“Why hello there, dear! A spot of tea and a thought for the day?” ☕</div>
+    <input class="chat-input" placeholder="Type your reflection here..." />
+  </div>
+
+  <!-- Umbrella -->
+  <button id="umbrellaButton" class="umbrella-button glow">
+    <svg id="umbrellaClosed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <path d="M32 2C28 10 25 18 25 26h14C39 18 36 10 32 2zM32 26v22M32 48a6 6 0 0 0 0 12" />
+    </svg>
+    <svg id="umbrellaOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="display:none;">
+      <path d="M32 4C18 4 6 16 2 30h60C58 16 46 4 32 4zM32 30v18M32 48a6 6 0 0 0 0 12" />
+      <path d="M4 30C12 18 24 12 32 12s20 6 28 18" stroke-linecap="round" />
+    </svg>
+    <div id="shimmer" class="shimmer"></div>
+  </button>
+</div>
+
+<script>
+const umbrellaBtn = document.getElementById('umbrellaButton');
+const chat = document.getElementById('chatContainer');
+const umbrellaClosed = document.getElementById('umbrellaClosed');
+const umbrellaOpen = document.getElementById('umbrellaOpen');
+const shimmer = document.getElementById('shimmer');
+const rainContainer = document.getElementById('rainContainer');
+let isOpen = false;
+
+function startRain() {
+  for (let i = 0; i < 30; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.animationDelay = Math.random() * 4 + 's';
+    drop.style.animationDuration = (Math.random() * 2 + 4) + 's';
+    rainContainer.appendChild(drop);
+  }
+}
+
+function stopRain() {
+  rainContainer.innerHTML = '';
+}
+
+umbrellaBtn.addEventListener('click', () => {
+  isOpen = !isOpen;
+  if (isOpen) {
+    umbrellaClosed.style.display = 'none';
+    umbrellaOpen.style.display = 'block';
+    umbrellaBtn.querySelector('svg').style.width = '90px';
+    umbrellaBtn.querySelector('svg').style.transform = 'translateY(-10px)';
+    chat.classList.add('active');
+    shimmer.style.opacity = '1';
+    shimmer.animate([
+      {transform:'translateX(-50%) scaleY(0)', opacity:0},
+      {transform:'translateX(-50%) scaleY(1)', opacity:1},
+      {transform:'translateX(-50%) translateY(-60px) scaleY(0.2)', opacity:0}
+    ],{duration:1500, easing:'ease-out'});
+    startRain();
+  } else {
+    umbrellaClosed.style.display = 'block';
+    umbrellaOpen.style.display = 'none';
+    umbrellaBtn.querySelector('svg').style.width = '60px';
+    umbrellaBtn.querySelector('svg').style.transform = 'translateY(0)';
+    chat.classList.remove('active');
+    stopRain();
+  }
+});
+</script>
+</body>
+</html>

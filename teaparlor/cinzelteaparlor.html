@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+  <title>Blueprint Tea Parlour ☂️</title>
+  <style>
+  body {
+      font-family: 'Cinzel', serif;
+      margin: 0;
+      background: radial-gradient(circle at center, #0b152a, #050a16);
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Softer blueprint grid */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(#25396f22 1px, transparent 1px),
+        linear-gradient(90deg, #25396f22 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+    }
+
+    /* Central halo behind umbrella */
+    .halo {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(180,140,255,0.25), transparent 70%);
+      filter: blur(20px);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Virtue shelf (static) */
+    .virtue-shelf {
+      position: fixed;
+      top: 50%;
+      right: 30px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      z-index: 5;
+    }
+
+    .virtue-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(180,140,255,0.2);
+      border: 1px solid rgba(200,180,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e0d0ff;
+      font-size: 1.4em;
+      transition: all 0.3s ease;
+    }
+
+    .virtue-icon:hover {
+      background: rgba(200,180,255,0.35);
+      box-shadow: 0 0 10px #bda4ff88;
+      transform: scale(1.1);
+    }
+
+    /* Music Drawer (static placeholder) */
+    .music-drawer {
+      position: fixed;
+      top: 40%;
+      right: 0;
+      width: 120px;
+      height: 250px;
+      background: rgba(150,120,255,0.08);
+      border-left: 1px solid rgba(190,160,255,0.3);
+      border-radius: 10px 0 0 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #bfbaff;
+      font-size: 0.9em;
+      z-index: 3;
+    }
+
+    /* Umbrella and chat */
+    .umbrella-container {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .umbrella-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      position: relative;
+      animation: pulseGlow 3s infinite;
+    }
+
+    .umbrella-button svg {
+      width: 70px;
+      height: 70px;
+      stroke: #c29eff;
+      fill: none;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 8px #b389ff88);
+      transition: transform 0.6s ease;
+    }
+
+    .umbrella-button.open svg {
+      transform: rotate(-10deg) scale(1.05);
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 6px #b389ff66);
+      }
+      50% {
+        filter: drop-shadow(0 0 14px #d8b4ffcc);
+      }
+    }
+    chat-panel {
+  font-family: 'Patrick Hand', cursive;
+}
+
+    /* Chat bubble */
+    .chat-panel {
+      position: absolute;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      width: 280px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid #c3b3ff33;
+      border-radius: 20px 20px 0 20px;
+      padding: 15px;
+      opacity: 0;
+      transition: all 0.6s ease;
+      pointer-events: none;
+      box-shadow: 0 0 12px #a483ff33;
+    }
+
+    .chat-panel.open {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .chat-panel::before {
+      content: "☕";
+      position: absolute;
+      top: -30px;
+      left: calc(50% - 15px);
+      font-size: 20px;
+      opacity: 0.8;
+      animation: steam 3s ease-in-out infinite;
+    }
+
+    @keyframes steam {
+      0% { transform: translateY(0); opacity: 0.8; }
+      50% { transform: translateY(-8px); opacity: 0.4; }
+      100% { transform: translateY(0); opacity: 0.8; }
+    }
+
+    /* Content */
+    .content {
+      text-align: center;
+      margin-top: 70px;
+      color: #a5c2ff;
+      font-size: 1.2em;
+      z-index: 2;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>🫖 Miss Poppins’ Blueprint Tea Parlour</h1>
+    <p>Where mindfulness meets adventure — one virtue at a time.</p>
+  </div>
+
+  <!-- Static Virtue Shelf -->
+  <div class="virtue-shelf">
+    <div class="virtue-icon" title="Etiquette">💐</div>
+    <div class="virtue-icon" title="Lore">📜</div>
+    <div class="virtue-icon" title="Herb Garden">🌿</div>
+    <div class="virtue-icon" title="Proverbs">✨</div>
+    <div class="virtue-icon" title="Poetry">🕯️</div>
+    <div class="virtue-icon" title="Tea Rituals">🍵</div>
+    <div class="virtue-icon" title="Wisdom">🪞</div>
+  </div>
+
+  <!-- Static Music Drawer -->
+  <div class="music-drawer">
+    <p>🎵 Music Drawer</p>
+    <small>(coming soon)</small>
+  </div>
+
+  <!-- Halo -->
+  <div class="halo"></div>
+
+  <!-- Umbrella & Chat -->
+  <div class="umbrella-container">
+    <button class="umbrella-button" id="umbrellaBtn" aria-label="Open chat">
+      <svg id="umbrellaClosed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+        <path d="M32 4 L32 40 M32 40 L28 60 M32 40 L36 60 M20 20 Q32 8 44 20" />
+      </svg>
+      <svg id="umbrellaOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="display:none;">
+        <path d="M32 4 Q20 24 8 24 Q32 4 56 24 Q44 24 32 4 Z" />
+        <line x1="32" y1="4" x2="32" y2="44" />
+        <line x1="32" y1="44" x2="28" y2="60" />
+        <line x1="32" y1="44" x2="36" y2="60" />
+      </svg>
+    </button>
+
+    <div class="chat-panel" id="chatPanel">
+      <div id="chatContent">
+        <p><strong>Miss Poppins:</strong> “Spit-spot! Let’s start a small quest of courage.”</p>
+        <p><em>Type <strong>quest</strong> to begin or <strong>tea</strong> for a calming brew.</em></p>
+      </div>
+      <input id="chatInput" type="text" placeholder="Type here..." 
+             style="width:100%;margin-top:8px;border:none;background:rgba(255,255,255,0.05);color:#fff;padding:6px;border-radius:8px;font-family:inherit;" />
+    </div>
+  </div>
+
+  <script>
+    const umbrellaBtn = document.getElementById('umbrellaBtn');
+    const chatPanel = document.getElementById('chatPanel');
+    const closedIcon = document.getElementById('umbrellaClosed');
+    const openIcon = document.getElementById('umbrellaOpen');
+    const chatInput = document.getElementById('chatInput');
+    const chatContent = document.getElementById('chatContent');
+
+    let isOpen = false;
+    let questStage = 0;
+
+    umbrellaBtn.addEventListener('click', () => {
+      isOpen = !isOpen;
+      umbrellaBtn.classList.toggle('open', isOpen);
+      chatPanel.classList.toggle('open', isOpen);
+      closedIcon.style.display = isOpen ? 'none' : 'block';
+      openIcon.style.display = isOpen ? 'block' : 'none';
+    });
+
+    chatInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const input = chatInput.value.trim().toLowerCase();
+        chatInput.value = '';
+
+        if (!input) return;
+        const userMsg = `<p><strong>You:</strong> ${input}</p>`;
+        chatContent.insertAdjacentHTML('beforeend', userMsg);
+
+        let reply = '';
+        if (input.includes('quest')) {
+          questStage = 1;
+          reply = 'Splendid! 🌸 Your first quest: “Take one small bold action today, and do it with grace.” Type <strong>done</strong> when you complete it.';
+        } else if (input.includes('done') && questStage === 1) {
+          questStage = 2;
+          reply = 'Marvelous! 🌼 Now, reflect upon your courage — share one moment of bravery or kindness you acted upon.';
+        } else if (input.includes('tea')) {
+          reply = 'Ah, tea! 🍵 Black, Matcha, or Chai — which would soothe your spirit today?';
+        } else {
+          reply = 'Miss Poppins smiles politely: “How curious. Try typing <strong>quest</strong> or <strong>tea</strong>.”';
+        }
+
+        chatContent.insertAdjacentHTML('beforeend', `<p><strong>Miss Poppins:</strong> ${reply}</p>`);
+        chatPanel.scrollTop = chatPanel.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -423,7 +423,8 @@ function handleResponse(response) {
       conversationStep = 2;
     }, 1000);
   } else if (conversationStep === 2) {
-    // Third question (Kira Tank doozy     if (response.toLowerCase().trim() === 'yes') {
+    // Third question (Kira Tank doozy)     
+    if (response.toLowerCase().trim() === 'yes') {
       setTimeout(() => {
         appendMessage("“YES? Oh, you magnificent troublemaker! Let’s dive in – hold onto your hat!”");
         // Trigger dynamic transition to next room

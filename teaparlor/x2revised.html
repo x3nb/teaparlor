@@ -551,78 +551,31 @@ function checkAnswer(answer) {
   }
 }
 
-function checkTeaAnswer(correctAnswer, questionNumber) {
-  // Remove any existing quiz buttons
-  const existingButtons = document.querySelector('.quiz-buttons');
-  if (existingButtons) existingButtons.remove();
-  
+function checkAnswer(answer) {
   const buttons = document.querySelectorAll('.quiz-button');
-  buttons.forEach(btn => btn.disabled = true);
-  const selected = event.target.textContent.charAt(0); // Get A, B, or C
-  if (selected === correctAnswer) {
-    buttons[correctAnswer === 'B' ? 1 : (correctAnswer === 'A' ? 0 : 2)].classList.add('correct');
-    appendMessage("“Well done! Proper tea service is an art – Miss Primrose approves.”", false, nextScrollingText);
-    if (questionNumber === 1) {
-      // Proceed to question 2
-      setTimeout(() => {
-        appendMessage("“Question 2: How should you hold the teacup handle? A) With your pinky extended, B) With your thumb and forefinger, C) With your whole hand?”", false, nextScrollingText);
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'quiz-buttons';
-        buttonsContainer.innerHTML = `
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 2)">A) With your pinky extended</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 2)">B) With your thumb and forefinger</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 2)">C) With your whole hand</button>
-        `;
-        nextScrollingText.parentNode.appendChild(buttonsContainer);
-      }, 3000);
-    } else if (questionNumber === 2) {
-      // Proceed to question 3
-      setTimeout(() => {
-        appendMessage("“Question 3: When offering milk or sugar, in what order should you present them? A) Sugar first, then milk, B) Milk first, then sugar, C) It doesn't matter.”", false, nextScrollingText);
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'quiz-buttons';
-        buttonsContainer.innerHTML = `
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">A) Sugar first, then milk</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">B) Milk first, then sugar</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">C) It doesn't matter</button>
-        `;
-        nextScrollingText.parentNode.appendChild(buttonsContainer);
-      }, 3000);
-    } else if (questionNumber === 3) {
-      // Proceed to question 4
-      setTimeout(() => {
-        appendMessage("“Question 4: How should you stir your tea? A) Clink the spoon loudly against the cup, B) Stir gently without clinking, C) Use the spoon to splash tea everywhere.”", false, nextScrollingText);
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'quiz-buttons';
-        buttonsContainer.innerHTML = `
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">A) Clink the spoon loudly against the cup</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">B) Stir gently without clinking</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">C) Use the spoon to splash tea everywhere</button>
-        `;
-        nextScrollingText.parentNode.appendChild(buttonsContainer);
-      }, 3000);
-    } else if (questionNumber === 4) {
-      // Proceed to question 5
-      setTimeout(() => {
-        appendMessage("“Question 5: If a guest asks for more tea, what should you do? A) Refill their cup immediately, B) Ask if they want milk or sugar first, C) Ignore them and sip your own.”", false, nextScrollingText);
-        const buttonsContainer = document.createElement('div');
-        buttonsContainer.className = 'quiz-buttons';
-        buttonsContainer.innerHTML = `
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">A) Refill their cup immediately</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">B) Ask if they want milk or sugar first</button>
-          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">C) Ignore them and sip your own</button>
-        `;
-        nextScrollingText.parentNode.appendChild(buttonsContainer);
-      }, 3000);
-    } else if (questionNumber === 5) {
-      // End lesson or hint at next
-      setTimeout(() => {
-        appendMessage("“Excellent! You've mastered tea service. Next time, we'll explore etiquette in Paris – Kira Tank might cause a scene, but Miss Primrose will guide us. Ready for more?”", false, nextScrollingText);
-      }, 3000);
-    }
+  buttons.forEach(btn => btn.disabled = true); // Disable buttons after answer
+  if (answer === 'A') {
+    buttons[0].classList.add('correct');
+    appendMessage("“Correct! You're a natural – Miss Primrose would be proud. Kira Tank might rebel, but you know better!”", false, nextScrollingText);
+    // Proceed to tea serving etiquette
+    setTimeout(() => {
+      appendMessage("“Great job! Now, let's move to serving tea properly. Kira Tank might slosh it everywhere like a wild storm, but Miss Primrose insists on elegance. Question 1: When pouring tea, where should the spout of the teapot face? A) Toward the guest, B) Away from the guest, C) Straight up?”", false, nextScrollingText);
+      // Remove any existing quiz buttons
+      const existingButtons = document.querySelector('.quiz-buttons');
+      if (existingButtons) existingButtons.remove();
+      // Add quiz buttons for tea question 1
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'quiz-buttons';
+      buttonsContainer.innerHTML = `
+        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">A) Toward the guest</button>
+        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">B) Away from the guest</button>
+        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">C) Straight up</button>
+      `;
+      nextScrollingText.parentNode.appendChild(buttonsContainer);
+    }, 3000);
   } else {
-    buttons[selected === 'A' ? 0 : (selected === 'B' ? 1 : 2)].classList.add('wrong');
-    appendMessage("“Not quite – Kira Tank would approve of chaos, but etiquette demands precision! Try again.”", false, nextScrollingText);
+    buttons[answer === 'B' ? 1 : 2].classList.add('wrong');
+    appendMessage("“Oops, that's more Kira Tank than tea party! Try again – etiquette is key!”", false, nextScrollingText);
     // Re-enable buttons for retry
     setTimeout(() => {
       buttons.forEach(btn => {

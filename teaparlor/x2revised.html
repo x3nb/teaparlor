@@ -518,28 +518,27 @@ function startLesson1() {
 function checkAnswer(answer) {
   const buttons = document.querySelectorAll('.quiz-button');
   buttons.forEach(btn => {
-    btn.disabled = true; // Disable all buttons immediately
-    btn.style.pointerEvents = 'none'; // Prevent further clicks
+    btn.disabled = true;
+    btn.style.pointerEvents = 'none';
   });
   
   if (answer === 'A') {
     buttons[0].classList.add('correct');
     appendMessage("“Correct! You're a natural – Miss Primrose would be proud. Kira Tank might rebel, but you know better!”", false, nextScrollingText);
-    // Proceed to tea serving etiquette
+    // Proceed to yes/no question for tea etiquette
     setTimeout(() => {
-      appendMessage("“Great job! Now, let's move to serving tea properly. Kira Tank might slosh it everywhere like a wild storm, but Miss Primrose insists on elegance. Question 1: When pouring tea, where should the spout of the teapot face? A) Toward the guest, B) Away from the guest, C) Straight up?”", false, nextScrollingText);
+      appendMessage("“Great job! Now, are you ready to learn about serving tea properly? Kira Tank might slosh it everywhere like a wild storm, but Miss Primrose insists on elegance. Yes or No?”", false, nextScrollingText);
       // Remove any existing quiz buttons safely
       const existingButtons = document.querySelector('.quiz-buttons');
       if (existingButtons) {
         existingButtons.remove();
       }
-      // Add new quiz buttons for tea question 1
+      // Add yes/no buttons
       const buttonsContainer = document.createElement('div');
       buttonsContainer.className = 'quiz-buttons';
       buttonsContainer.innerHTML = `
-        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">A) Toward the guest</button>
-        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">B) Away from the guest</button>
-        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">C) Straight up</button>
+        <button class="quiz-button" onclick="handleYesNo('yes')">Yes</button>
+        <button class="quiz-button" onclick="handleYesNo('no')">No</button>
       `;
       nextScrollingText.parentNode.appendChild(buttonsContainer);
     }, 3000);
@@ -557,8 +556,6 @@ function checkAnswer(answer) {
   }
 }
 
-  }
-}
 
 function checkAnswer(answer) {
   const buttons = document.querySelectorAll('.quiz-button');

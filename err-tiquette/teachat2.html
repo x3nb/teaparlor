@@ -388,10 +388,10 @@ body {
       <div class="chat-header">Miki's Wonder Party</div>
       <div class="chat-messages">
         <div id="nextScrollingText">
-          <div class="chat-message">Welcome to the challenge, dear! Now that you're here, let's blow up some teacups and wonder at the stars. What's your first wild idea? ✨💥</div>
+          <div class="chat-message">Welcome to the challenge, dear! Now that you're here, let's spin teacups and boggle minds. What's your first wild idea? ✨💥</div>
         </div>
       </div>
-      <input class="chat-input" placeholder="Share your mischief..." />
+      <input class="chat-input" placeholder="Share your mad-ideas..." />
     </div>
   </div>
 </div>
@@ -402,7 +402,7 @@ body {
     <div class="chat-messages">
       <div class="instructions">Welcome to my Tea Parlour Quest! Type your responses and follow the prompts. </div>
       <div id="scrollingText">
-        <div class="chat-message">“Oh, hello there, you curious wanderer! I'm Miki-Neko, eldest of the Chimera-Cats, a dash of spunk, striped like a skunk, and a musical punk! Fancy joining me for a tea party that's equal parts etiquette lesson and madcap adventure? ” ☕✨</div>
+        <div class="chat-message">“Oh, hello there, curious wanderer! I'm Miki-Neko, eldest of the Chimera-Cats, a dash of spunk, striped like a skunk, and a musical punk! You're invited to my tea party that's equal parts etiquette lesson and madcap adventure! ” ☕✨</div>
         <button class="begin-quest" onclick="startQuest()">Begin Quest</button>
       </div>
     </div>
@@ -503,7 +503,7 @@ function handleResponse(response) {
   if (conversationStep === 1) {
     // After first response, ask second question (Miss Primrose-inspired wit)
     setTimeout(() => {
-      appendMessage("“How delightfully curious! Etiquette tip from me: Always stir your tea clockwise for good luck, unless you’re feeling rebellious. What’s your favorite way to break the rules at a proper gathering?”");
+      appendMessage("“How delightfully curious! Etiquette tip from me: Always stir your tea clockwise for good measure, lest you’re feeling a bit rebellious. What’s your favorite way to break the ice at a proper gathering?”");
       conversationStep = 2;
     }, 1000);
   } else if (conversationStep === 2) {
@@ -520,8 +520,7 @@ function handleResponse(response) {
       }, 1000);
     } else {
       // If not YES, prompt again or loop
-      setTimeout(() => {
-        appendMessage("“Not quite ready? That’s fine – but are you prepared to toss aside the teacups, question the Queen of Hearts, and maybe even blow up a few norms? Just say YES if you dare!”");
+      setTimeout(() => {** Oh my, – but are you prepared to toss aside the teacups, question the Queen of Hearts, and maybe even blow up a few norms? Just say YES if you dare!”");
       }, 1000);
     }
   }

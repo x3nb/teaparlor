@@ -89,24 +89,70 @@ body {
     transform: translateX(20px) translateY(100vh);
   }
 }
+<!-- ... (rest of your code remains the same) ... -->
 
-/* Umbrella Button */
-.umbrella-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  position: relative;
-  z-index: 10;
-}
-.umbrella-button svg {
-  width: 120px; /* Centered and larger */
-  height: 160px;
-  transition: transform 0.8s ease, width 0.8s ease, opacity 0.4s ease;
-}
-.umbrella-button.glow svg {
-  filter: drop-shadow(0 0 10px #cdb4ff);
-}
+<!-- Updated Umbrella Button, centered and clickable to start quest -->
+<button id="umbrellaButton" class="umbrella-button glow" style="position: absolute; bottom: 170px; left: 50%; transform: translateX(-50%); z-index: 10;">
+  <svg id="umbrellaClosed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="width: 120px; height: 160px;">
+    <path d="M32 2C28 10 25 18 25 26h14C39 18 36 10 32 2zM32 26v22M32 48a6 6 0 0 0 0 12" />
+  </svg>
+  <svg id="umbrellaOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="display:none; width: 120px; height: 160px;">
+    <path d="M32 4C18 4 6 16 2 30h60C58 16 46 4 32 4zM32 30v18M32 48a6 6 0 0 0 0 12" />
+    <path d="M4 30C12 18 24 12 32 12s20 6 28 18" stroke-linecap="round" />
+  </svg>
+  <div id="shimmer" class="shimmer"></div>
+</button>
+
+<script>
+// Existing script...
+
+// Make the umbrella clickable to start the quest
+const umbrellaBtn = document.getElementById('umbrellaButton');
+umbrellaBtn.addEventListener('click', () => {
+  // If quest hasn't started yet, trigger startQuest
+  if (conversationStep === 0) {
+    startQuest();
+  }
+  // Also toggle the static effect and umbrella state as before
+  if (!isOpen) {
+    const staticOverlay = document.createElement('div');
+    staticOverlay.className = 'static-overlay';
+    document.querySelector('.chat-container').appendChild(staticOverlay);
+    document.querySelector('.chat-container').classList.add('static');
+    setTimeout(() => {
+      document.querySelector('.chat-container').classList.add('active');
+      if (document.querySelector('.chat-container').contains(staticOverlay))
+        document.querySelector('.chat-container').removeChild(staticOverlay);
+    }, 2500);
+  } else {
+    document.querySelector('.chat-container').classList.remove('active');
+    document.querySelector('.chat-container').classList.remove('static');
+  }
+  // Toggle umbrella state
+  isOpen = !isOpen;
+  if (isOpen) {
+    umbrellaClosed.style.display = 'none';
+    umbrellaOpen.style.display = 'block';
+    document.querySelector('#umbrellaButton svg').style.width = '120px';
+    document.querySelector('#umbrellaButton svg').style.height = '160px';
+    shimmer.style.opacity = '1';
+    shimmer.animate([
+      {transform:'translateX(-50%) scaleY(0)', opacity:0},
+      {transform:'translateX(-50%) scaleY(1)', opacity:1},
+      {transform:'translateX(-50%) translateY(-60px) scaleY(0.2)', opacity:0}
+    ],{duration:1500, easing:'ease-out'});
+    startRain();
+  } else {
+    umbrellaClosed.style.display = 'block';
+    umbrellaOpen.style.display = 'none';
+    document.querySelector('#umbrellaButton svg').style.width = '60px';
+    document.querySelector('#umbrellaButton svg').style.height = '80px';
+    stopRain();
+  }
+});
+</script>
+  
+ 
 
 /* Pulse animation */
 @keyframes pulse {

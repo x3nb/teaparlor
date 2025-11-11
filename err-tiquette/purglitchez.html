@@ -229,8 +229,34 @@ body {
 .chat-input::placeholder {
   color: #d0c1f7;
 }
-
-/* Instructions */
+/* Glitch Effect */
+.glitch {
+  animation: sizzle 1.5s ease-in-out;
+  filter: hue-rotate(90deg) saturate(2) brightness(1.2);
+}
+@keyframes sizzle {
+  0%, 100% { transform: translateX(0); filter: hue-rotate(0deg); }
+  10% { transform: translateX(-2px); filter: hue-rotate(45deg) saturate(3); }
+  20% { transform: translateX(2px); filter: hue-rotate(90deg); }
+  30% { transform: translateX(-1px); filter: hue-rotate(135deg) saturate(2.5); }
+  40% { transform: translateX(1px); filter: hue-rotate(180deg); }
+  50% { transform: translateX(-3px); filter: hue-rotate(225deg) saturate(3); }
+  60% { transform: translateX(3px); filter: hue-rotate(270deg); }
+  70% { transform: translateX(-1px); filter: hue-rotate(315deg) saturate(2.5); }
+  80% { transform: translateX(1px); filter: hue-rotate(360deg); }
+  90% { transform: translateX(0); filter: hue-rotate(0deg) saturate(1); }
+}
+.chat-container.glitch {
+  opacity: 0.5; /* Start semi-transparent during glitch */
+}
+.chat-container.fade-in {
+  animation: fadeIn 1s ease-in-out forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+  /* Instructions */
 .instructions {
   font-family: 'Courier New', monospace;
   font-size: 1.2rem;

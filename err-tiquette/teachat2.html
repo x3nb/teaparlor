@@ -415,4 +415,280 @@ let isMuted = false;
 let lessonStep = 0; // Track lesson progress
 
 // Auto-play music on load (may be blocked by browser)
-backgroundMusic.volume = 0.2
+backgroundMusic.volume = 0.2 backgroundMusic.play().catch(() => {
+  // Handle autoplay block
+});
+
+// Music control
+musicControl.addEventListener('click', () => {
+  if (isMuted) {
+    backgroundMusic.play();
+    musicControl.textContent = '🔊 Mute Music';
+  } else {
+    backgroundMusic.pause();
+    musicControl.textContent = '🔇 Unmute Music';
+  }
+  isMuted = !isMuted;
+});
+
+function startRain() {
+  for (let i = 0; i < 30; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'raindrop';
+    drop.style.left = Math.random() * 100 + '%';
+    drop.style.animationDelay = Math.random() * 4 + 's';
+    drop.style.animationDuration = (Math.random() * 2 + 4) + 's';
+    rainContainer.appendChild(drop);
+  }
+}
+
+function stopRain() {
+  rainContainer.innerHTML = '';
+}
+
+function appendMessage(text, isUser = false, container = scrollingText) {
+  const msg = document.createElement('div');
+  msg.className = 'chat-message' + (isUser ? ' user' : '');
+  if (!isUser) {
+    msg.classList.add('new-message'); // Add blink for new AI messages
+    setTimeout(() => {
+      msg.classList.remove('new-message'); // Remove after 2 seconds
+    }, 2000);
+  }
+  msg.textContent = text;
+  container.appendChild(msg);
+  // Auto-scroll to bottom for new messages
+  container.parentNode.scrollTop = container.parentNode.scrollHeight;
+}
+
+function startQuest() {
+  // Hide the begin quest button and start the conversation
+  document.querySelector('.begin-quest').style.display = 'none';
+  appendMessage("“Splendid! Now, tell me, dear – what’s the most wondrous thing you’ve ever stumbled upon, like a rabbit hole or a talking teacup? I’m all ears (and a bit of mischief)!”");
+  conversationStep = 1;
+}
+
+function handleResponse(response) {
+  appendMessage(response, true); // User's message
+  chatInput.value = ''; // Clear input
+
+  if (conversationStep === 1) {
+    // After first response, ask second question (Miss Primrose-inspired wit)
+    setTimeout(() => {
+      appendMessage("“How delightfully curious! Etiquette tip from me: Always stir your tea clockwise for good luck, unless you’re feeling rebellious. What’s your favorite way to break the rules at a proper gathering?”");
+      conversationStep = 2;
+    }, 1000);
+  } else if (conversationStep === 2) {
+    // Third question (Kira Tank doozy)
+    if (response.toLowerCase().trim() === 'yes') {
+      setTimeout(() => {
+        appendMessage("“YES? Oh, you magnificent troublemaker! Let’s dive in – hold onto your hat!”");
+        // Trigger dynamic transition to next room
+        setTimeout(() => {
+          mainScene.style.opacity = '0';
+          nextRoom.classList.add('active');
+          startLesson1();
+        }, 1500);
+      }, 1000);
+    } else {
+      // If not YES, prompt again or loop
+      setTimeout(() => {
+        appendMessage("Oh my, – but are you prepared to toss aside the teacups, question the Queen of Hearts, and maybe even blow up a few norms? Just say YES if you dare!”");
+      }, 1000);
+    }
+  }
+}
+
+function startLesson1() {
+  // Start Lesson 1: Dinner Etiquette - Table Manners
+  setTimeout(() => {
+    appendMessage("“Welcome to Lesson 1: Dinner Etiquette - Table Manners! Imagine Kira Tank at the table – she's tying her napkin around her neck like a bandana, ready for a food fight! But Miss Primrose would say, 'Don't wear your napkin like a 'bib' for the mob – put it on your lap, not your cap!' Now, test your knowledge: Where should you place your napkin at the start of a meal? A) On your lap, B) Around your neck, C) On the table?”", false, nextScrollingText);
+    // Add quiz buttons
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'quiz-buttons';
+    buttonsContainer.innerHTML = `
+      <button class="quiz-button" onclick="checkAnswer('A')">A) On your lap</button>
+      <button class="quiz-button" onclick="checkAnswer('B')">B) Around your neck</button>
+      <button class="quiz-button" onclick="checkAnswer('C')">C) On the table</button>
+    `;
+    nextScrollingText.parentNode.appendChild(buttonsContainer);
+  }, 2000);
+}
+
+function checkAnswer(answer) {
+  const buttons = document.querySelectorAll('.quiz-button');
+  buttons.forEach(btn => btn.disabled = true); // Disable buttons after answer
+  if (answer === 'A') {
+    buttons[0].classList.add('correct');
+    appendMessage("“Correct! You're a natural – Miss Primrose would be proud. Kira Tank might rebel, but you know better!”", false, nextScrollingText);
+    // Proceed to tea serving etiquette
+    setTimeout(() => {
+      appendMessage("“Great job! Now, let's move to serving tea properly. Kira Tank might slosh it everywhere like a wild storm, but Miss Primrose insists on elegance. Question 1: When pouring tea, where should the spout of the teapot face? A) Toward the guest, B) Away from the guest, C) Straight up?”", false, nextScrollingText);
+      // Remove any existing quiz buttons
+      const existingButtons = document.querySelector('.quiz-buttons');
+      if (existingButtons) existingButtons.remove();
+      // Add quiz buttons for tea question 1
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'quiz-buttons';
+      buttonsContainer.innerHTML = `
+        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">A) Toward the guest</button>
+        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">B) Away from the guest</button>
+        <button class="quiz-button" onclick="checkTeaAnswer('B', 1)">C) Straight up</button>
+      `;
+      nextScrollingText.parentNode.appendChild(buttonsContainer);
+    }, 3000);
+  } else {
+    buttons[answer === 'B' ? 1 : 2].classList.add('wrong');
+    appendMessage("“Oops, that's more Kira Tank than tea party! Try again – etiquette is key!”", false, nextScrollingText);
+    // Re-enable buttons for retry
+    setTimeout(() => {
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('wrong');
+      });
+    }, 2000);
+  }
+}
+
+function checkTeaAnswer(correctAnswer, questionNumber) {
+  // Remove any existing quiz buttons
+  const existingButtons = document.querySelector('.quiz-buttons');
+  if (existingButtons) existingButtons.remove();
+  
+  const buttons = document.querySelectorAll('.quiz-button');
+  buttons.forEach(btn => btn.disabled = true);
+  const selected = event.target.textContent.charAt(0); // Get A, B, or C
+  if (selected === correctAnswer) {
+    buttons[correctAnswer === 'B' ? 1 : (correctAnswer === 'A' ? 0 : 2)].classList.add('correct');
+    appendMessage("“Well done! Proper tea service is an art – Miss Primrose approves.”", false, nextScrollingText);
+    if (questionNumber === 1) {
+      // Proceed to question 2
+      setTimeout(() => {
+        appendMessage("“Question 2: How should you hold the teacup handle? A) With your pinky extended, B) With your thumb and forefinger, C) With your whole hand?”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 2)">A) With your pinky extended</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 2)">B) With your thumb and forefinger</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 2)">C) With your whole hand</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 2) {
+      // Proceed to question 3
+      setTimeout(() => {
+        appendMessage("“Question 3: When offering milk or sugar, in what order should you present them? A) Sugar first, then milk, B) Milk first, then sugar, C) It doesn't matter.”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">A) Sugar first, then milk</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">B) Milk first, then sugar</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">C) It doesn't matter</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 3) {
+      // Proceed to question 4
+      setTimeout(() => {
+        appendMessage("“Question 4: How should you stir your tea? A) Clink the spoon loudly against the cup, B) Stir gently without clinking, C) Use the spoon to splash tea everywhere.”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">A) Clink the spoon loudly against the cup</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">B) Stir gently without clinking</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">C) Use the spoon to splash tea everywhere</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 4) {
+      // Proceed to question 5
+      setTimeout(() => {
+        appendMessage("“Question 5: If a guest asks for more tea, what should you do? A) Refill their cup immediately, B) Ask if they want milk or sugar first, C) Ignore them and sip your own.”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">A) Refill their cup immediately</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">B) Ask if they want milk or sugar first</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">C) Ignore them and sip your own</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 5) {
+      // End lesson or hint at next
+      setTimeout(() => {
+        appendMessage("“Excellent! You've mastered tea service. Next time, we'll explore etiquette in Paris – Kira Tank might cause a scene, but Miss Primrose will guide us. Ready for more?”", false, nextScrollingText);
+      }, 3000);
+    }
+  } else {
+    buttons[selected === 'A' ? 0 : (selected === 'B' ? 1 : 2)].classList.add('wrong');
+    appendMessage("“Not quite – Kira Tank would approve of chaos, but etiquette demands precision! Try again.”", false, nextScrollingText);
+    // Re-enable buttons for retry
+    setTimeout(() => {
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('wrong');
+      });
+    }, 2000);
+  }
+}
+
+function teacupClick() {
+  // Fun interaction: Clicking teacups reveals a random fact or pun
+  const facts = [
+    "“Did you know? In France, don't clink glasses too hard – it's bad luck!”",
+    "“Pun time: Why did the teacup go to school? To get a little 'tea'-ching!”",
+    "“Kira Tank tip: Sometimes, just eat with your hands – rules are for squares!”"
+  ];
+  const randomFact = facts[Math.floor(Math.random() * facts.length)];
+  appendMessage(randomFact, false, nextScrollingText);
+}
+
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && chatInput.value.trim()) {
+    handleResponse(chatInput.value.trim());
+  }
+});
+
+umbrellaBtn.addEventListener('click', () => {
+  if (!isOpen) {
+    // Closed to open: Trigger vintage TV static effect
+    const staticOverlay = document.createElement('div');
+    staticOverlay.className = 'static-overlay';
+    chat.appendChild(staticOverlay);
+    chat.classList.add('static');
+    setTimeout(() => {
+      chat.classList.add('active');
+      chat.removeChild(staticOverlay); // Remove overlay after effect
+    }, 2500); // Effect duration
+  } else {
+    // Open to closed: Remove active class
+    chat.classList.remove('active');
+    chat.classList.remove('static');
+  }
+  
+  // Toggle umbrella state
+  isOpen = !isOpen;
+  if (isOpen) {
+    umbrellaClosed.style.display = 'none';
+    umbrellaOpen.style.display = 'block';
+    umbrellaBtn.querySelector('svg').style.width = '90px';
+    umbrellaBtn.querySelector('svg').style.transform = 'translateY(-10px)';
+    shimmer.style.opacity = '1';
+    shimmer.animate([
+      {transform:'translateX(-50%) scaleY(0)', opacity:0},
+      {transform:'translateX(-50%) scaleY(1)', opacity:1},
+      {transform:'translateX(-50%) translateY(-60px) scaleY(0.2)', opacity:0}
+    ],{duration:1500, easing:'ease-out'});
+    startRain();
+  } else {
+    umbrellaClosed.style.display = 'block';
+    umbrellaOpen.style.display = 'none';
+    umbrellaBtn.querySelector('svg').style.width = '60px';
+    umbrellaBtn.querySelector('svg').style.transform = 'translateY(0)';
+    stopRain();
+  }
+});
+</script>
+</body>
+</html>
+

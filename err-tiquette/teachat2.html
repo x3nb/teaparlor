@@ -598,7 +598,12 @@ function checkAnswer(answer) {
 }
 
 // New function for tea etiquette questions
+  
 function checkTeaAnswer(correctAnswer, questionNumber) {
+  // Remove any existing quiz buttons
+  const existingButtons = document.querySelector('.quiz-buttons');
+  if (existingButtons) existingButtons.remove();
+  
   const buttons = document.querySelectorAll('.quiz-button');
   buttons.forEach(btn => btn.disabled = true);
   const selected = event.target.textContent.charAt(0); // Get A, B, or C
@@ -619,6 +624,45 @@ function checkTeaAnswer(correctAnswer, questionNumber) {
         nextScrollingText.parentNode.appendChild(buttonsContainer);
       }, 3000);
     } else if (questionNumber === 2) {
+      // Proceed to question 3 (from my previous suggestions)
+      setTimeout(() => {
+        appendMessage("“Question 3: When offering milk or sugar, in what order should you present them? A) Sugar first, then milk, B) Milk first, then sugar, C) It doesn't matter.”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">A) Sugar first, then milk</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">B) Milk first, then sugar</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 3)">C) It doesn't matter</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 3) {
+      // Proceed to question 4
+      setTimeout(() => {
+        appendMessage("“Question 4: How should you stir your tea? A) Clink the spoon loudly against the cup, B) Stir gently without clinking, C) Use the spoon to splash tea everywhere.”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">A) Clink the spoon loudly against the cup</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">B) Stir gently without clinking</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 4)">C) Use the spoon to splash tea everywhere</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 4) {
+      // Proceed to question 5
+      setTimeout(() => {
+        appendMessage("“Question 5: If a guest asks for more tea, what should you do? A) Refill their cup immediately, B) Ask if they want milk or sugar first, C) Ignore them and sip your own.”", false, nextScrollingText);
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.className = 'quiz-buttons';
+        buttonsContainer.innerHTML = `
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">A) Refill their cup immediately</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">B) Ask if they want milk or sugar first</button>
+          <button class="quiz-button" onclick="checkTeaAnswer('B', 5)">C) Ignore them and sip your own</button>
+        `;
+        nextScrollingText.parentNode.appendChild(buttonsContainer);
+      }, 3000);
+    } else if (questionNumber === 5) {
       // End lesson or hint at next
       setTimeout(() => {
         appendMessage("“Excellent! You've mastered tea service. Next time, we'll explore etiquette in Paris – Kira Tank might cause a scene, but Miss Primrose will guide us. Ready for more?”", false, nextScrollingText);
@@ -627,6 +671,7 @@ function checkTeaAnswer(correctAnswer, questionNumber) {
   } else {
     buttons[selected === 'A' ? 0 : (selected === 'B' ? 1 : 2)].classList.add('wrong');
     appendMessage("“Not quite – Kira Tank would approve of chaos, but etiquette demands precision! Try again.”", false, nextScrollingText);
+    // Re-enable buttons for retry
     setTimeout(() => {
       buttons.forEach(btn => {
         btn.disabled = false;

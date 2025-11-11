@@ -182,6 +182,7 @@ body {
   text-align: center;
   margin-bottom: 0.5rem;
   color: #b790ff; /* Purple for thematic detective vibe */
+
 }
 .chat-messages {
   position: relative;
@@ -372,6 +373,10 @@ body {
   <!-- Chat -->
   <div id="chatContainer" class="chat-container">
     <div class="chat-header">Miss Mischief</div>
+    <!-- Character Image Spot -->
+<div id="characterSpot" style="position:absolute; bottom: 350px; right: 50px; z-index: 30; width: 150px; height: 150px; border: 3px solid #b790ff; border-radius: 10px; overflow: hidden; background-color: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;">
+  <img src="YOUR_CHARACTER_IMAGE_URL" alt="Character" style="width: 100%; height: auto;">
+</div>
     <div class="chat-messages">
       <div class="instructions">Welcome to the Tea Parlour Quest! Click the umbrella to start, then type your responses and follow the prompts. Enjoy the mystery! 🕵️‍♀️</div>
       <div id="scrollingText">

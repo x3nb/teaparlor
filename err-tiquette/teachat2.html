@@ -518,12 +518,11 @@ function handleResponse(response) {
           startLesson1();
         }, 1500);
       }, 1000);
-    } else {
-      // If not YES, prompt again or loop
-      setTimeout(() => {** Oh my, – but are you prepared to toss aside the teacups, question the Queen of Hearts, and maybe even blow up a few norms? Just say YES if you dare!”");
-      }, 1000);
-    }
-  }
+   } else {
+  // If not YES, prompt again or loop
+  setTimeout(() => {
+    appendMessage("Oh my, – but are you prepared to toss aside the teacups, question the Queen of Hearts, and maybe even blow up a few norms? Just say YES if you dare!”");
+  }, 1000);
 }
 
 function startLesson1() {

@@ -659,7 +659,7 @@ umbrellaBtn.addEventListener('click', () => {
     chat.classList.add('static');
     setTimeout(() => {
       chat.classList.add('active');
-      chat.removeChild(staticOverlay); // Remove overlay after effect
+      if (chat.contains(staticOverlay)) chat.removeChild(staticOverlay); // Safe removal
     }, 2500); // Effect duration
   } else {
     // Open to closed: Remove active class

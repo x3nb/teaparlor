@@ -415,7 +415,8 @@ let isMuted = false;
 let lessonStep = 0; // Track lesson progress
 
 // Auto-play music on load (may be blocked by browser)
-backgroundMusic.volume = 0.2 backgroundMusic.play().catch(() => {
+backgroundMusic.volume = 0.2 
+backgroundMusic.play().catch(() => {
   // Handle autoplay block
 });
 

@@ -499,15 +499,28 @@ chatInput.addEventListener('keypress', (e) => {
     handleResponse(chatInput.value.trim());
   }
 });
-
 umbrellaBtn.addEventListener('click', () => {
+  if (!isOpen) {
+    // Closed to open: Trigger glitch and gradual appearance
+    chat.classList.add('glitch');
+    setTimeout(() => {
+      chat.classList.remove('glitch');
+      chat.classList.add('fade-in');
+      chat.classList.add('active');
+    }, 1500); // Glitch for 1.5s, then fade in
+  } else {
+    // Open to closed: Remove active class
+    chat.classList.remove('active');
+    chat.classList.remove('fade-in');
+  }
+  
+  // Toggle umbrella state
   isOpen = !isOpen;
   if (isOpen) {
     umbrellaClosed.style.display = 'none';
     umbrellaOpen.style.display = 'block';
     umbrellaBtn.querySelector('svg').style.width = '90px';
     umbrellaBtn.querySelector('svg').style.transform = 'translateY(-10px)';
-    chat.classList.add('active');
     shimmer.style.opacity = '1';
     shimmer.animate([
       {transform:'translateX(-50%) scaleY(0)', opacity:0},
@@ -520,7 +533,6 @@ umbrellaBtn.addEventListener('click', () => {
     umbrellaOpen.style.display = 'none';
     umbrellaBtn.querySelector('svg').style.width = '60px';
     umbrellaBtn.querySelector('svg').style.transform = 'translateY(0)';
-    chat.classList.remove('active');
     stopRain();
   }
 });

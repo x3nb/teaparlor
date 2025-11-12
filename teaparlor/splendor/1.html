@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Miss Poppins’ Tea Wisdom Chamber</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap" rel="stylesheet" />
+<style>
+body{
+  margin:0;height:100vh;
+  background:radial-gradient(ellipse at center,#1b1130 0%,#0a0615 100%);
+  overflow:hidden;
+  font-family:"Cinzel",serif;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+#umbrella-container{position:relative;bottom:50px;}
+.umbrella{width:120px;height:120px;cursor:pointer;transition:transform 1s ease;}
+.umbrella.open{transform:scale(1.3) rotate(0deg);}
+.umbrella.closed{transform:scale(0.9) rotate(-15deg);}
+.glow{
+  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,100,255,0.4),transparent 70%);
+  opacity:0;transition:opacity 1s ease;pointer-events:none;
+}
+.umbrella.open + .glow{opacity:1;animation:shimmer 3s infinite alternate;}
+@keyframes shimmer{
+  from{box-shadow:0 0 10px 2px rgba(200,100,255,0.3);}
+  to{box-shadow:0 0 25px 5px rgba(200,100,255,0.7);}
+}
+/* Rain */
+#rain-layer{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;overflow:hidden;z-index:1;
+}
+.raindrop{
+  position:absolute;top:-10px;width:2px;height:6px;
+  background:rgba(190,150,255,0.7);border-radius:50%;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  0%{transform:translateY(0);opacity:1;}
+  100%{transform:translateY(120px);opacity:0;}
+}
+/* Chat window */
+#chat-window{
+  position:absolute;bottom:160px;left:50%;transform:translateX(-50%);
+  width:300px;height:260px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(220,180,255,0.4);
+  border-radius:16px;backdrop-filter:blur(6px);
+  box-shadow:0 0 30px rgba(200,100,255,0.3);
+  color:#f7eaff;display:flex;flex-direction:column;justify-content:space-between;
+  opacity:0;transition:opacity 1s ease;z-index:2;
+}
+#chat-window.show{opacity:1;}
+#messages{padding:12px;overflow-y:auto;font-size:14px;}
+.user-msg{color:#d3bfff;text-align:right;margin:4px 0;}
+.bot-msg{color:#fff;margin:4px 0;}
+#input{
+  border:none;background:rgba(255,255,255,0.1);color:#fff;
+  padding:8px;border-radius:0 0 16px 16px;font-family:"Cinzel",serif;
+}
+#input:focus{outline:none;}
+</style>
+</head>
+<body>
+<div id="rain-layer"></div>
+<div id="umbrella-container">
+  <svg id="umbrella" class="umbrella closed" viewBox="0 0 100 100">
+    <path d="M50 10 C30 15,15 40,10 60 H90 C85 40,70 15,50 10 Z" fill="#a66bff"/>
+    <rect x="48" y="60" width="4" height="25" fill="#d3bfff"/>
+  </svg>
+  <div class="glow"></div>
+</div>
+
+<div id="chat-window">
+  <div id="messages"></div>
+  <input id="input" type="text" placeholder="Type your thought & press Enter…" />
+</div>
+
+<script>
+const umbrella=document.getElementById('umbrella');
+const chatWindow=document.getElementById('chat-window');
+const rainLayer=document.getElementById('rain-layer');
+const input=document.getElementById('input');
+const messages=document.getElementById('messages');
+let rainInterval;
+const teaWisdom=[
+  "In Japan, they bow before pouring; in Britain, they pour before gossiping — either way, dear, the key is to stir with grace, not haste!",
+  "A whisk in Kyoto, a spoon in London — both teach patience, but only one leaves froth on one’s upper lip.",
+  "Ah, the Way of Tea! In the East they honour the leaf, in the West they honour the chatter. Perhaps both are quite right — provided one’s manners don’t go cold.",
+  "One might say the British invented teatime — but the Japanese turned it into timelessness."
+];
+
+/* --- Sound --- */
+let audioCtx;
+function playChime(noteHz){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+  const delay=audioCtx.createDelay();
+  const feedback=audioCtx.createGain();
+
+  osc.type="sine";
+  osc.frequency.value=noteHz;
+  gain.gain.setValueAtTime(0.3,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+2);
+
+  delay.delayTime.value=0.25;
+  feedback.gain.value=0.3;
+  delay.connect(feedback);
+  feedback.connect(delay);
+  gain.connect(delay);
+  delay.connect(audioCtx.destination);
+  gain.connect(audioCtx.destination);
+
+  osc.connect(gain);
+  osc.start();
+  osc.stop(audioCtx.currentTime+2.1);
+}
+
+/* --- Rain --- */
+function createRain(){
+  const drop=document.createElement('div');
+  drop.classList.add('raindrop');
+  drop.style.left=Math.random()*window.innerWidth+'px';
+  const dur=2+Math.random()*2;
+  drop.style.animationDuration=dur+'s';
+  rainLayer.appendChild(drop);
+  setTimeout(()=>drop.remove(),dur*1000);
+}
+function startRain(){rainInterval=setInterval(createRain,120);}
+function stopRain(){clearInterval(rainInterval);}
+
+/* --- Chat --- */
+umbrella.addEventListener('click',()=>{
+  const isClosed=umbrella.classList.contains('closed');
+  if(isClosed){
+    umbrella.classList.remove('closed');umbrella.classList.add('open');
+    chatWind

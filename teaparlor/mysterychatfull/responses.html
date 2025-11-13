@@ -5,6 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Page</title>
     <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <style>
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000; /* black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Courier New', Courier, monospace; /* Typewriter-like font */
+  }
+  #chatbox {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 500px;
+    background-color: #4B0082; /* deep purple */
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  #chatlogs {
+    flex: 1;
+    padding: 10px;
+    background-color: #6495ED; /* cornflower blue */
+    overflow-y: auto;
+  }
+  #chatlogs div {
+    margin: 5px 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+  #chatlogs div.bot {
+    background-color: #fff;
+    align-self: flex-start;
+  }
+  #chatlogs div.user {
+    background-color: #333;
+    color: #fff;
+    align-self: flex-end;
+  }
+  #inputArea {
+    display: flex;
+    padding: 10px;
+    background-color: #4B0082; /* deep purple */
+  }
+  #chatinput {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Courier New', Courier, monospace; /* typewriter font */
+    font-size: 1em;
+  }
+  #sendBtn {
+    margin-left: 8px;
+    padding: 8px 16px;
+    background-color: #ffd700; /* gold for contrast */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1em;
+  }
+  #sendBtn:hover {
+    background-color: #ffb700;
+  }
+</style>
   </head>
   <!-- Add this inside your HTML body, before </body> -->
 <div id="chatbox">

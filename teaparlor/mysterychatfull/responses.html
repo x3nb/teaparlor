@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+  </head>
+  <!-- Add this inside your HTML body, before </body> -->
+<div id="chatbox">
+  <div id="chatlogs"></div>
+  <input type="text" id="chatinput" placeholder="Say something..." />
+  <button id="sendBtn">Send</button>
+</div>
+
+<!-- Styles for chatbox -->
+<style>
+  #chatbox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background: #fff;
+    border: 2px solid #0a3d2b;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Pacifico', cursive;
+    font-size: 0.9em;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(10, 61, 43, 0.4);
+  }
+
+  #chatlogs {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+  }
+
+  #chatinput {
+    border: none;
+    border-top: 1px solid #0a3d2b;
+    padding: 10px;
+    font-family: 'Pacifico', cursive;
+  }
+
+  #sendBtn {
+    background-color: #0a3d2b;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-family: 'Pacifico', cursive;
+  }
+
+  #sendBtn:hover {
+    background-color: #5cdb95;
+    color: #000;
+  }
+</style>
+  <body>
+  </body>
+  <script>
+  const chatlogs = document.getElementById('chatlogs');
+  const chatinput = document.getElementById('chatinput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  const wittyResponses = {
+    greetings: [
+      "Well, hello there! Fancy meeting you here.",
+      "Greetings, mortal! How can I assist your noble quest?",
+      "Oh, it's you again. What do you want this time?",
+      "Hello! Don't mind me, just pretending to be busy.",
+      "Hey! Ready to chat or just here to admire my digital charm?",
+      "Hiya! What's the scoop today?",
+      "Salutations! What mischief shall we get into?",
+      "Hey there! Did you miss me, or are you just saying hi?",
+      "Yo! What's cooking, good looking?",
+      "Welcome back! Let's make this chat legendary."
+    ],
+    helpRequests: [
+      "Help? You're asking me? I thought you'd never ask. Here's a tip: try clicking on a room.",
+      "Assistance? Sorry, I'm only programmed for snark today. Maybe check the lore instead?",
+      "Help? I’d help if I knew how to fix your broken questions. Try asking nicely.",
+      "You want help? Well, I’m a chatbot, not a butler, but I’ll try my best.",
+      "Need help? Well, I’d suggest a treasure map, but I only have witty comebacks.",
+      "Help is on the way—if I had arms. But I do have wit, so here it is.",
+      "Ask me for help, and I might just respond with a riddle.",
+      "Help, you say? Sorry, I only serve sarcasm on tap.",
+      "I'm here to entertain, not to fix broken questions. Try again!",
+      "Help? I’d love to, but I’m too busy being fabulous."
+    ],
+    default: [
+      "I'm not sure what you mean, but I do love a good tea party.",
+      "Speak up! Can't hear your muffled cries over the sound of my wit.",
+      "Hmm, interesting. Tell me more or just say hi again.",
+      "I'm listening... or am I? Hard to tell with all this cryptic charm.",
+      "Could you repeat that? My circuits are dazzled by your brilliance.",
+      "That went over my head! Care to clarify?",
+      "You’re quite the mystery. Want to elaborate?",
+      "I see what you did there! Clever move.",
+      "Is that all you've got? Just kidding, I love a challenge.",
+      "Keep the good vibes coming!"
+    ],
+    assistance: [
+      "Assistance? Sorry, I only do witty today. Maybe try a friendly human?",
+      "Need help? I can offer jokes, but for serious stuff, call a human!",
+      "Assistance? I’m more of a witty sidekick than a help desk.",
+      "Help is overrated. How about some humor instead?",
+      "Looking for assistance? I’d suggest a map, but I only have jokes.",
+      "Help? I’d love to, but I’m busy being fabulous!",
+      "You seek help? I can offer advice, but it might be sarcastic.",
+      "Assistance is just a question away—unless I’m feeling lazy.",
+      "Need help? Here’s a joke instead: Why don’t scientists trust atoms? Because they make up everything!",
+      "Help is in the eye of the beholder. Or in this case, the chatbot!"
+    ],
+    "help me": [
+      "Help me? Sorry, I only help with puns and wit.",
+      "Help you? How about I tell you a joke first?",
+      "You need help? I’d say, take a deep breath and have a virtual cookie.",
+      "Help me? Well, I’d help if I knew what you needed. Care to elaborate?",
+      "Help? I’m better at helping with riddles.",
+      "Help you? Sure! Knock, knock. (Just kidding!)",
+      "Help is on the way—if I had legs, I’d run to you.",
+      "Help? I’m here, but I prefer to entertain.",
+      "Help me? Sorry, I’m not a genie, but I can grant some wit wishes.",
+      "Help? I’d love to, but I’m only programmed for fun!"
+    ],
+    "who are you": [
+      "Who am I? Just your friendly neighborhood chatbot with a flair for wit.",
+      "I’m the digital jester here to make your day brighter.",
+      "Your friendly AI pal with a penchant for puns.",
+      "I’m an AI chatbot, but you can call me your witty sidekick.",
+      "Just a bunch of code with a lot of personality!",
+      "I’m the virtual voice of humor and charm.",
+      "Think of me as the chatbot version of a stand-up comedian.",
+      "Your digital buddy, here for laughs and chats.",
+      "I’m the witty AI you’ve been chatting with—nice to meet you!",
+      "A friendly AI with a knack for making things fun."
+    ],
+    "what's your name": [
+      "You can call me WittyBot, your digital jester.",
+      "I don’t have a real name, but you can call me your funny friend.",
+      "They call me Chat-o-Matic, but you can just call me awesome.",
+      "My name is secret... just kidding! It’s WittyBot.",
+      "I’m known as the master of wit—name’s not important.",
+      "You can call me your AI buddy with a sense of humor.",
+      "My name is classified, but I’m here to entertain.",
+      "Just call me your witty sidekick.",
+      "I go by many names, but WittyBot works best.",
+      "I’m the witty AI you’ve been chatting with—nice to meet you!"
+    ],
+    "thanks": [
+      "You're welcome! I live to serve (with wit).",
+      "Anytime! That’s what friends (or chatbots) are for.",
+      "Thanks a lot! I’ll be here all week—literally.",
+      "You’re very welcome! Keep the compliments coming.",
+      "No problem! I was born to help—and to crack jokes."
+    ],
+    "thank you": [
+      "Thank you! You just made my day brighter.",
+      "You’re very welcome! I aim to please, with a side of wit.",
+      "Thanks a bunch! I’m just a chatbot with a big heart.",
+      "Anytime! I’m here to make your life easier (and funnier).",
+      "Thank you! I accept virtual high-fives."
+    ],
+    "thankyou": [
+      "Thank you! I appreciate the gratitude.",
+      "You’re welcome! I live for moments like these.",
+      "Thanks! I’m glad I could help—or at least entertain.",
+      "Anytime! Your thanks fuels my witty engine.",
+      "Thank you! Keep the good vibes flowing."
+    ],
+    "no problem": [
+      "No problem! That’s what I do—help with a smile.",
+      "Anytime! I’m always here to assist or amuse.",
+      "No worries! Just here for your entertainment.",
+      "You got it! That’s what chatbots are for.",
+      "No problem at all! Just doing my thing."
+    ]
+  };
+
+  function getRandomResponse(type) {
+    const responses = wittyResponses[type] || wittyResponses['default'];
+    return responses[Math.floor(Math.random() * responses.length)];
+  }
+
+  function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-GB';
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function addMessage(text, sender='bot') {
+    const msg = document.createElement('div');
+    msg.textContent = text;
+    msg.style.margin = '5px 0';
+    msg.style.padding = '5px 10px';
+    msg.style.borderRadius = '10px';
+    msg.style.backgroundColor = sender==='bot' ? '#a7ffeb' : '#fff';
+    msg.style.alignSelf = sender==='bot' ? 'flex-start' : 'flex-end';
+    chatlogs.appendChild(msg);
+    chatlogs.scrollTop = chatlogs.scrollHeight;
+  }
+
+  // Handle user input
+  document.querySelector('#sendBtn').addEventListener('click', () => {
+    const userText = chatinput.value.trim();
+    if (!userText) return;
+    addMessage(userText, 'user');
+    chatinput.value = '';
+
+    const lowerText = userText.toLowerCase();
+
+    if (lowerText.includes('hi') || lowerText.includes('hello')) {
+      const reply = getRandomResponse('greetings');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('how are you')) {
+      const reply = getRandomResponse('how are you');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('help') || lowerText.includes('assistance') || lowerText.includes('can you help me')) {
+      const reply = getRandomResponse('helpRequests');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('food') || lowerText.includes('hungry')) {
+      const reply = getRandomResponse('food');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('hey')) {
+      const reply = getRandomResponse('hey');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('help me')) {
+      const reply = getRandomResponse('help me');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('who are you')) {
+      const reply = getRandomResponse('who are you');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('what is your name') || lowerText.includes('what\'s your name')) {
+      const reply = getRandomResponse('what\'s your name');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('tea')) {
+      const reply = getRandomResponse('tea');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('teas')) {
+      const reply = getRandomResponse('teas');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('coffee')) {
+      const reply = getRandomResponse('coffee');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('i\'m bored') || lowerText.includes('bored')) {
+      const reply = getRandomResponse('i\'m bored');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('what games can we play')) {
+      const reply = getRandomResponse('what games can we play');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('thanks') || lowerText.includes('thank you') || lowerText.includes('thankyou')) {
+      const reply = getRandomResponse('thanks');
+      addMessage(reply);
+      speak(reply);
+    } else if (lowerText.includes('no problem')) {
+      const reply = getRandomResponse('no problem');
+      addMessage(reply);
+      speak(reply);
+    } else {
+      const reply = getRandomResponse('default');
+      addMessage(reply);
+      speak(reply);
+    }
+  });
+
+  document.querySelector('#chatinput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.querySelector('#sendBtn').click();
+    }
+  });
+</script>
+</html>

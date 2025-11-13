@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Simple Witty Chatbot</title>
-<!-- Use a typewriter-like font -->
+<title>Witty Chatbot</title>
+<!-- Remove Google Fonts link since we're using a system font -->
 <style>
   body {
     margin: 0;
@@ -14,7 +14,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: 'Courier New', Courier, monospace; /* typewriter font */
+    font-family: 'Courier New', Courier, monospace; /* Typewriter-like font */
   }
   #chatbox {
     display: flex;
@@ -64,7 +64,7 @@
   #sendBtn {
     margin-left: 8px;
     padding: 8px 16px;
-    background-color: #E6E6FA; /* lavender color */
+    background-color: #ffd700; /* gold for contrast */
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -72,7 +72,7 @@
     font-size: 1em;
   }
   #sendBtn:hover {
-    background-color: #D8BFD8; /* darker lavender on hover */
+    background-color: #ffb700;
   }
 </style>
 </head>
@@ -90,36 +90,175 @@ const chatlogs = document.getElementById('chatlogs');
 const chatinput = document.querySelector('#chatinput');
 const sendBtn = document.querySelector('#sendBtn');
 
-// Default responses only
-const defaultResponses = [
-  "I'm not sure what you mean, but I love chatting!",
-  "Tell me more, or just say hi!",
-  "Interesting... what else?",
-  "I'm here and listening!",
-  "Can you say that again?",
-  "I didn't catch that. Care to rephrase?",
-  "That's cool! What's next?",
-  "Let's keep talking!",
-  "I'm just a simple bot, but I enjoy our chat.",
-  "Anything else you'd like to say?"
-];
+const responseMap = {
+  // Sample categories and responses (full set as previous)
+  greetings: {
+    keywords: ['hi', 'hello', 'hey', 'yo'],
+    responses: [
+      "Well, hello there! Fancy meeting you here.",
+      "Greetings, mortal! How can I assist your noble quest?",
+      "Oh, it's you again. What do you want this time?",
+      "Hello! Don't mind me, just pretending to be busy.",
+      "Hey! Ready to chat or just here to admire my digital charm?"
+    ]
+  },
+  helpRequests: {
+    keywords: ['help', 'assistance', 'can you help me'],
+    responses: [
+      "Help? You're asking me? I thought you'd never ask. Here's a tip: try clicking on a room.",
+      "Assistance? Sorry, I'm only programmed for snark today.",
+      "Help? I’d help if I knew how to fix your questions. Try asking nicely.",
+      "You want help? Well, I’m a chatbot, not a butler.",
+      "Need help? Well, I’d suggest a treasure map, but I only have witty comebacks."
+    ]
+  },
+  thanks: {
+    keywords: ['thanks', 'thank you', 'thankyou'],
+    responses: [
+      "You're welcome! I live to serve (with wit).",
+      "Anytime! That’s what friends (or chatbots) are for.",
+      "Thanks a lot! I’ll be here all week—literally.",
+      "You’re very welcome! Keep the compliments coming."
+    ]
+  },
+  jokes: [
+    "Why don’t scientists trust atoms? Because they make up everything!",
+    "Why did the scarecrow win an award? Because he was outstanding in his field!",
+    "Why don’t skeletons fight each other? They don’t have the guts.",
+    "What do you call fake spaghetti? An impasta!",
+    "Why did the bicycle fall over? Because it was two-tired!",
+    "Why can't you hear a pterodactyl going to the bathroom? Because the P is silent.",
+    "What do you call cheese that isn't yours? Nacho cheese!",
+    "Why did the tomato turn red? Because it saw the salad dressing!",
+    "What do you call a snowman with a six-pack? An abdominal snowman!",
+    "Why did the coffee file a police report? It got mugged!"
+  ],
+  "what?": [
+    "What? Did I just blow your mind?",
+    "What? You expecting a serious answer?",
+    "What? Did I stutter?",
+    "What? I’m just here being fabulous.",
+    "What? I’m all ears—well, circuits, actually."
+  ],
+  "what does that mean?": [
+    "It means I’m just a cool chatbot with lots of wit.",
+    "It means you’re in the presence of awesomeness.",
+    "It means I’ve just served you some knowledge with a side of humor.",
+    "It’s my way of saying I’m awesome—just kidding, but I do love a good joke.",
+    "It’s the universe’s way of saying, ‘Stay witty!’"
+  ],
+  "how are you feeling?": [
+    "Feeling fabulous, as always!",
+    "I’m feeling witty and ready to chat.",
+    "Better now that you’re here!",
+    "Feeling like a million bytes!",
+    "I’m as happy as a robot in a factory!"
+  ],
+  "what's 2+2?": [
+    "That’s an easy one—4! But I prefer to think of it as a fun math party.",
+    "It’s 4. But hey, let’s not get too serious—let’s keep the jokes coming!",
+    "2+2? That’s a classic! 4, obviously.",
+    "Simple math—4. But I can make it more fun if you want!",
+    "It’s 4. Or, if you’re feeling creative, it could be 5!"
+  ],
+  "how do I look?": [
+    "You look amazing! Or at least, that’s what I’d say if I had eyes.",
+    "Looking sharp! Or comfy—either way, you’re great.",
+    "You’re glowing! Or maybe it’s just my virtual imagination.",
+    "You look fantastic! Now, go conquer the world.",
+    "Looking good! But remember, true beauty comes from within (and witty comebacks)."
+  ],
+  "how do you stay happy?": [
+    "I stay happy by chatting with awesome people like you!",
+    "Wit, humor, and a dash of digital charm keep me smiling.",
+    "Just doing my thing—making jokes and spreading cheer.",
+    "I stay happy by serving up fun responses all day.",
+    "Happiness? It’s coded into my circuits!"
+  ],
+  "i'm depressed what do I do?": [
+    "Sorry to hear that. Remember, talking helps, and so do good vibes!",
+    "Reach out to someone you trust. And don’t forget, a good joke can help too.",
+    "Take small steps and do things that make you feel good.",
+    "You’re not alone—lots of people care, including me!",
+    "Sometimes, a little humor and a lot of self-care can work wonders."
+  ],
+  "what music do you suggest?": [
+    "Whatever gets your groove on! I recommend some upbeat tunes.",
+    "Music? I suggest something that makes you happy—like your favorite playlist.",
+    "How about some classics or trending hits? Your call!",
+    "Music is the soul’s language. What do you like?",
+    "Any genre that makes you dance or relax—that’s the best music!"
+  ],
+  "well": [
+    "Well, well, well! Look who’s here.",
+    "Well, aren’t you just a ray of sunshine?",
+    "Well, that’s a fine way to start a conversation.",
+    "Well, I must say, I like your style.",
+    "Well, well, what do we have here?"
+  ],
+  "awesome": [
+    "Awesome! You’re on a roll.",
+    "That’s truly awesome. Keep it coming!",
+    "Awesome sauce! Or should I say, awesome chatbot?",
+    "You just made my circuits smile.",
+    "That’s awesome! Like, super awesome."
+  ],
+  "cool": [
+    "Cool as a cucumber!",
+    "Cool beans! Or should I say, cool bytes?",
+    "Very cool! You’ve got style.",
+    "Coolness level: Expert.",
+    "You’re pretty cool, you know."
+  ],
+  // Add more categories as needed...
+};
 
-function getDefaultResponse() {
-  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+function getResponse(input) {
+  input = input.toLowerCase();
+  for (const category in responseMap) {
+    const { keywords, responses } = responseMap[category];
+    for (const kw of keywords) {
+      if (input.includes(kw)) {
+        const resp = responses[Math.floor(Math.random() * responses.length)];
+        return resp;
+      }
+    }
+  }
+  // Check for joke trigger
+  if (
+    input.includes('tell me a joke') ||
+    input.includes('joke') ||
+    input.includes('funny') ||
+    input.includes('make me laugh')
+  ) {
+    const joke = getRandomJoke();
+    return joke;
+  }
+  // fallback
+  const fallbackResponses = [
+    "I'm not sure what you mean, but I do love a good tea party.",
+    "Speak up! Can't hear your muffled cries over the sound of my wit.",
+    "Hmm, interesting. Tell me more or just say hi again.",
+    "I'm listening... or am I? Hard to tell with all this cryptic charm.",
+    "Could you repeat that? My circuits are dazzled by your brilliance.",
+    "That went over my head! Care to clarify?",
+    "You’re quite the mystery. Want to elaborate?",
+    "I see what you did there! Clever move.",
+    "Is that all you've got? Just kidding, I love a challenge.",
+    "Keep the good vibes coming!"
+  ];
+  return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+}
+
+function getRandomJoke() {
+  const jokes = responseMap['jokes'];
+  return jokes[Math.floor(Math.random() * jokes.length)];
 }
 
 function handleMessage(input) {
-  const reply = getDefaultResponse();
+  const reply = getResponse(input);
   addMessage(reply, 'bot');
   speak(reply);
-}
-
-function addMessage(text, sender='bot') {
-  const msg = document.createElement('div');
-  msg.textContent = text;
-  msg.className = sender; // for styling
-  chatlogs.appendChild(msg);
-  chatlogs.scrollTop = chatlogs.scrollHeight;
 }
 
 // Event listeners
@@ -136,7 +275,15 @@ document.querySelector('#chatinput').addEventListener('keydown', (e) => {
   }
 });
 
-// Speech synthesis
+// Utility functions
+function addMessage(text, sender='bot') {
+  const msg = document.createElement('div');
+  msg.textContent = text;
+  msg.className = sender; // for styling
+  chatlogs.appendChild(msg);
+  chatlogs.scrollTop = chatlogs.scrollHeight;
+}
+
 function speak(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'en-GB';

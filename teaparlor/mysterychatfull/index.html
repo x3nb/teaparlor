@@ -91,7 +91,8 @@ const chatinput = document.querySelector('#chatinput');
 const sendBtn = document.querySelector('#sendBtn');
 
 const responseMap = {
-  // Sample categories and responses (full set as previous)
+  // Basic categories, responses, and jokes as before
+  // (For brevity, only a subset is shown here, but the full code includes all previous responses, jokes, and categories)
   greetings: {
     keywords: ['hi', 'hello', 'hey', 'yo'],
     responses: [
@@ -121,6 +122,7 @@ const responseMap = {
       "You’re very welcome! Keep the compliments coming."
     ]
   },
+  // Add more categories as needed...
   jokes: [
     "Why don’t scientists trust atoms? Because they make up everything!",
     "Why did the scarecrow win an award? Because he was outstanding in his field!",
@@ -133,6 +135,7 @@ const responseMap = {
     "What do you call a snowman with a six-pack? An abdominal snowman!",
     "Why did the coffee file a police report? It got mugged!"
   ],
+  // Prompts for various questions
   "what?": [
     "What? Did I just blow your mind?",
     "What? You expecting a serious answer?",
@@ -189,6 +192,7 @@ const responseMap = {
     "Music is the soul’s language. What do you like?",
     "Any genre that makes you dance or relax—that’s the best music!"
   ],
+  // Additional prompts like "well", "awesome", etc.
   "well": [
     "Well, well, well! Look who’s here.",
     "Well, aren’t you just a ray of sunshine?",
@@ -210,7 +214,7 @@ const responseMap = {
     "Coolness level: Expert.",
     "You’re pretty cool, you know."
   ],
-  // Add more categories as needed...
+  // And so on for 'bitter', 'mad', 'friends', etc.
 };
 
 function getResponse(input) {
@@ -224,7 +228,7 @@ function getResponse(input) {
       }
     }
   }
-  // Check for joke trigger
+  // If no match, check for joke trigger
   if (
     input.includes('tell me a joke') ||
     input.includes('joke') ||
@@ -234,7 +238,7 @@ function getResponse(input) {
     const joke = getRandomJoke();
     return joke;
   }
-  // fallback
+  // Default fallback
   const fallbackResponses = [
     "I'm not sure what you mean, but I do love a good tea party.",
     "Speak up! Can't hear your muffled cries over the sound of my wit.",
@@ -255,27 +259,12 @@ function getRandomJoke() {
   return jokes[Math.floor(Math.random() * jokes.length)];
 }
 
-function handleMessage(input) {
-  const reply = getResponse(input);
-  addMessage(reply, 'bot');
-  speak(reply);
+function speak(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'en-GB';
+  window.speechSynthesis.speak(utterance);
 }
 
-// Event listeners
-document.querySelector('#sendBtn').addEventListener('click', () => {
-  const userText = document.querySelector('#chatinput').value.trim();
-  if (!userText) return;
-  addMessage(userText, 'user');
-  document.querySelector('#chatinput').value = '';
-  handleMessage(userText);
-});
-document.querySelector('#chatinput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    document.querySelector('#sendBtn').click();
-  }
-});
-
-// Utility functions
 function addMessage(text, sender='bot') {
   const msg = document.createElement('div');
   msg.textContent = text;
@@ -284,11 +273,23 @@ function addMessage(text, sender='bot') {
   chatlogs.scrollTop = chatlogs.scrollHeight;
 }
 
-function speak(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-GB';
-  window.speechSynthesis.speak(utterance);
-}
+// Event listener
+document.querySelector('#sendBtn').addEventListener('click', () => {
+  const userText = document.querySelector('#chatinput').value.trim();
+  if (!userText) return;
+  addMessage(userText, 'user');
+  document.querySelector('#chatinput').value = '';
+  const reply = getResponse(userText);
+  addMessage(reply, 'bot');
+  speak(reply);
+});
+
+document.querySelector('#chatinput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    document.querySelector('#sendBtn').click();
+  }
+});
 </script>
+
 </body>
 </html>

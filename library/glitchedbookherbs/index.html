@@ -39,6 +39,8 @@
             position: relative;
             border-left: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 0 5px rgba(157, 78, 221, 0.7);
+            animation: float 3s ease-in-out infinite;
+            animation-delay: calc(var(--order) * 0.2s);
         }
         .second-row {
             animation: float 3s ease-in-out infinite;
@@ -59,6 +61,10 @@
             0% { transform: rotate(0); }
             20% { transform: rotate(-15deg); }
             100% { transform: translateY(100px) rotate(-45deg); }
+        }
+        @keyframes floatGhost {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
         }
         .book:hover {
             transform: perspective(600px) rotateY(20deg) translateY(-5px);
@@ -184,26 +190,42 @@
 
     <script>
         function showMessage(title, message) {
+            const clickedBook = event.currentTarget;
             const messageBox = document.getElementById('messageBox');
-            messageBox.innerHTML = `<strong>${title}</strong><br>${message}`;
+            
+            // Special effect for blue books
+            if (clickedBook.style.backgroundColor.includes('4cc9f0')) { 
+                messageBox.innerHTML = `<strong style="color: #4cc9f0">${title}</strong><br>${message}<br><br>You found the secret!`;
+                document.body.style.background = 'linear-gradient(to bottom, #1a1a2e, #16213e)';
+                setTimeout(() => {
+                    const ghosts = ['👻', '👽', '💀'];
+                    const ghost = document.createElement('div');
+                    ghost.innerHTML = ghosts[Math.floor(Math.random()*ghosts.length)];
+                    ghost.style.position = 'fixed';
+                    ghost.style.fontSize = '30px';
+                    ghost.style.left = `${Math.random() * 100}%`;
+                    ghost.style.top = `${Math.random() * 100}%`;
+                    ghost.style.animation = 'floatGhost 5s linear forwards';
+                    document.body.appendChild(ghost);
+                }, 1000);
+            } else {
+                messageBox.innerHTML = `<strong>${title}</strong><br>${message}`;
+            }
             messageBox.style.display = 'block';
             
             setTimeout(() => {
-                const clickedBook = event.currentTarget;
                 clickedBook.style.animation = 'tiltAndFall 1.5s forwards';
                 clickedBook.style.cursor = 'default';
-                clickedBook.onclick = null; // Disable further clicks
+                clickedBook.onclick = null;
                 
                 setTimeout(() => {
-                    // Move to new shelf after animation
-                    const shelves = document.querySelectorAll('.shelf-tier');
-                    const randomShelf = shelves[Math.floor(Math.random() * shelves.length)];
-                    randomShelf.appendChild(clickedBook);
+                    const fallenShelf = document.querySelector('.fallen-shelf');
+                    fallenShelf.appendChild(clickedBook);
                     clickedBook.style.position = 'absolute';
                     clickedBook.style.bottom = '0';
                     clickedBook.style.animation = 'none';
                 }, 1500);
-            }, 3000);
+            }, 1500);
         }
 
         // Initialize random animations

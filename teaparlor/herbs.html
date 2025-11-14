@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Booknook Landing Page</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, #0f0c29, #3c096c);
+            font-family: 'Crimson Text', Georgia, serif;
+        }
+        .shelf {
+            position: relative;
+            width: 300px;
+            margin: 0 30px;
+        }
+        .shelf-tier {
+            height: 5px;
+            background: linear-gradient(to right, #240046, #5a189a);
+            margin-bottom: 30px;
+            position: relative;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .book {
+            width: 22px;
+            height: 70px;
+            margin: 0 1px;
+            display: inline-block;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 5px rgba(157, 78, 221, 0.7);
+        }
+        .second-row {
+            animation: float 3s ease-in-out infinite;
+            animation-delay: calc(var(--order) * 0.2s);
+        }
+        .open-book {
+            transform: rotateY(40deg) translateY(-8px);
+            z-index: 20;
+        }
+        .fallen-book {
+            transform: translateY(15px) rotate(-5deg);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        @keyframes tiltAndFall {
+            0% { transform: rotate(0); }
+            20% { transform: rotate(-15deg); }
+            100% { transform: translateY(100px) rotate(-45deg); }
+        }
+        .book:hover {
+            transform: perspective(600px) rotateY(20deg) translateY(-5px);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.9);
+            z-index: 10;
+        }
+        .book-icon {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #e0aaff;
+            text-shadow: 0 0 3px #9d4edd;
+        }
+        .message {
+            display: none;
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 12, 41, 0.95);
+            border-left: 3px solid #9d4edd;
+            color: #e0aaff;
+            padding: 15px;
+            width: 220px;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            font-family: 'Crimson Text', serif;
+            border-left: 3px solid #8D6E63;
+        }
+    </style>
+</head>
+<body>
+    <div class="shelf">
+        <div class="shelf-tier" style="background-color: #4CAF50;"></div>
+        <div class="shelf-tier" style="background-color: #388E3C;"></div>
+        <div class="shelf-tier" style="background-color: #5a189a;"></div>
+        <div class="book" onclick="showMessage('Mint', 'Cooling and refreshing, mint aids digestion and relieves headaches. Often used in teas and aromatherapy.');" style="background-color: #7b2cbf;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-leaf"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Lavender', 'Calming properties help reduce anxiety and promote sleep. Commonly used in sachets and essential oils.');" style="background-color: #5a189a;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-spa"></i></div>
+        </div>
+        <div class="book second-row fallen-book" style="--order: 1; background-color: #3c096c; outline: 1px solid #9d4edd;"
+             onclick="showMessage('Thyme', 'Antiseptic and antibacterial, great for respiratory health. Adds wonderful flavor to culinary dishes.');">
+            <div class="book-icon"><i class="fas fa-seedling"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Rosemary', 'Improves memory and concentration. Its piney fragrance makes it perfect for roasted dishes.');" style="background-color: #240046;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-tree"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Rose', 'Symbol of love, used in perfumes and skincare for its hydrating and soothing properties.');" style="background-color: #10002b;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-rose"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Chamomile', 'Gentle herb known for its calming effects. The perfect bedtime tea for relaxation.');" style="background-color: #3a0ca3;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-feather-alt"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Matcha', 'Powdered green tea packed with antioxidants, providing calm focus and energy.');" style="background-color: #4cc9f0;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-mug-hot"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Bergamot', 'Citrusy essential oil used in Earl Grey tea, known to reduce stress and uplift mood.');" style="background-color: #560bad;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-lemon"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Vanilla', 'Sweet and comforting fragrance, often used to reduce anxiety and promote relaxation.');" style="background-color: #480ca8;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-ice-cream"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Dreamtime Blend', 'Chamomile + lavender + vanilla for deep relaxation and peaceful sleep.');" style="background-color: #4361ee;
+            outline: 1px solid #4cc9f0;">
+            <div class="book-icon"><i class="fas fa-moon"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Citrus Revival', 'Bergamot + matcha + rosemary for an energizing morning boost.');" style="background-color: #3a0ca3;
+            outline: 1px solid #f72585;">
+            <div class="book-icon"><i class="fas fa-lemon"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Herbal Digestif', 'Mint + thyme + chamomile to settle and soothe the stomach.');" style="background-color: #7209b7;
+            outline: 1px solid #b5179e;">
+            <div class="book-icon"><i class="fas fa-stomach"></i></div>
+        </div>
+        <!-- New shelf tier with citrus/herbal books -->
+        <div class="shelf-tier" style="background-color: #5a189a;"></div>
+        <div class="book" onclick="showMessage('Jasmine', 'Floral and delicate, jasmine tea promotes relaxation and reduces stress with its sweet aroma.');" style="background-color: #f72585;
+            outline: 1px solid #b5179e;">
+            <div class="book-icon"><i class="fas fa-kiwi-bird"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Love', 'A romantic blend of rose, vanilla and chamomile to warm the heart and calm the mind.');" style="background-color: #7209b7;
+            outline: 1px solid #4361ee;">
+            <div class="book-icon"><i class="fas fa-heart"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Memory', 'Rosemary and mint blend to enhance cognitive function and mental clarity.');" style="background-color: #4361ee;
+            outline: 1px solid #4cc9f0;">
+            <div class="book-icon"><i class="fas fa-brain"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Secret', 'The apothecary\'s special mystic infusion - for enlightenment and inner vision.');" style="background-color: #3a0ca3;
+            outline: 1px solid #9d4edd;">
+            <div class="book-icon"><i class="fas fa-key"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Poems', 'Inspiring literary blend with lavender and vanilla to spark creativity.');" style="background-color: #4895ef;
+            outline: 1px solid #4cc9f0;">
+            <div class="book-icon"><i class="fas fa-feather"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Satsuma', 'Japanese citrus tea with bright, uplifting notes and vitamin C.');" style="background-color: #f72585;
+            outline: 1px solid #b5179e;">
+            <div class="book-icon"><i class="fas fa-apple-alt"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Lemon', 'Zesty and refreshing, lemon tea aids digestion and boosts immunity.');" style="background-color: #4895ef;
+            outline: 1px solid #4cc9f0;">
+            <div class="book-icon"><i class="fas fa-lemon"></i></div>
+        </div>
+        <div class="book" onclick="showMessage('Grapefruit', 'Tart and bittersweet, grapefruit tea helps metabolism and detoxification.');" style="background-color: #4361ee;
+            outline: 1px solid #f72585;">
+            <div class="book-icon"><i class="fas fa-citrus"></i></div>
+        </div>
+    </div>
+    <div class="message" id="messageBox"></div>
+
+    <script>
+        function showMessage(title, message) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.innerHTML = `<strong>${title}</strong><br>${message}`;
+            messageBox.style.display = 'block';
+            
+            setTimeout(() => {
+                const clickedBook = event.currentTarget;
+                clickedBook.style.animation = 'tiltAndFall 1.5s forwards';
+                clickedBook.style.cursor = 'default';
+                clickedBook.onclick = null; // Disable further clicks
+                
+                setTimeout(() => {
+                    // Move to new shelf after animation
+                    const shelves = document.querySelectorAll('.shelf-tier');
+                    const randomShelf = shelves[Math.floor(Math.random() * shelves.length)];
+                    randomShelf.appendChild(clickedBook);
+                    clickedBook.style.position = 'absolute';
+                    clickedBook.style.bottom = '0';
+                    clickedBook.style.animation = 'none';
+                }, 1500);
+            }, 3000);
+        }
+
+        // Initialize random animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const secondRowBooks = document.querySelectorAll('.second-row');
+            secondRowBooks.forEach((book, index) => {
+                book.style.setProperty('--order', index);
+                book.classList.add('fallen-book');
+            });
+        });
+    </script>
+</body>
+</html>

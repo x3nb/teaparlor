@@ -1,861 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Chimera Café — 36 Portal Gallery</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Chimera Café — Interactive Lore Experience</title>
 
-<style>
-    body {
-        margin: 0;
-        background: #050007;
-        font-family: "Inter", sans-serif;
-        overflow-x: hidden;
-        color: white;
-    }
+    <style>
+        body {
+            margin:0;
+            background:#0a0a0f;
+            color:#eee;
+            font-family:'Segoe UI', sans-serif;
+            overflow-x:hidden;
+        }
 
-    /* --- GRID STYLES --- */
-    .gallery {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        grid-gap: 6px;
-        padding: 6px;
-    }
+        .gallery {
+            display:grid;
+            grid-template-columns:repeat(6, 1fr);
+            grid-gap:2px;
+        }
 
-    .tile {
-        width: 100%;
-        padding-bottom: 100%;
-        position: relative;
-        cursor: pointer;
-        border-radius: 6px;
-        overflow: hidden;
-        background: #0f0019;
-        box-shadow: 0 0 10px #4a0082aa;
-        transition: transform .2s ease, box-shadow .2s ease;
-    }
+        .tile {
+            width:100%;
+            padding-top:100%;
+            position:relative;
+            overflow:hidden;
+            cursor:pointer;
+        }
 
-    .tile:hover {
-        transform: scale(1.03);
-        box-shadow: 0 0 30px #a473ffaa;
-    }
+        .tile img {
+            position:absolute;
+            top:0; left:0;
+            width:100%; height:100%;
+            object-fit:cover;
+            filter:blur(1px) grayscale(0.3) brightness(0.8);
+            transition:0.3s;
+        }
 
-    .tile-content {
-        position: absolute;
-        inset: 0;
-        background-size: cover;
-        background-position: center;
-        filter: brightness(0.95) contrast(1.05);
-    }
+        .tile:hover img {
+            filter:blur(0) grayscale(0) brightness(1);
+            transform:scale(1.05);
+        }
 
-    .overlay {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at center, #0000 50%, #2a006660 100%);
-        pointer-events: none;
-    }
+        #popupContainer {
+            position:fixed; top:0; left:0;
+            width:100%; height:100%;
+            background:rgba(0,0,0,0.85);
+            display:none;
+            justify-content:center;
+            align-items:flex-start;
+            padding-top:50px;
+            z-index:1000;
+            overflow-y:auto;
+        }
 
-    /* POPUP */
-    .popup {
-        position: fixed;
-        inset: 0;
-        display: none;
-        background: rgba(0,0,0,0.75);
-        backdrop-filter: blur(10px);
-        justify-content: center;
-        align-items: center;
-        z-index: 20;
-    }
-    .popup.active { display: flex; }
+        #popupContent {
+            background:#1a1a22;
+            padding:20px;
+            border-radius:10px;
+            max-width:800px;
+            width:90%;
+            color:#ddd;
+            box-shadow:0 0 20px #5a2d99;
+        }
 
-    .popup-content {
-        background: #1a002e;
-        border: 1px solid #9d71e4;
-        padding: 20px;
-        border-radius: 10px;
-        width: 80%;
-        max-width: 600px;
-        box-shadow: 0 0 20px #c7afff66;
-        animation: fadeIn .4s ease;
-    }
+        #popupActions button {
+            margin:10px 5px;
+            padding:10px 15px;
+            cursor:pointer;
+            background:#6c2cff;
+            border:none;
+            border-radius:6px;
+            color:white;
+        }
 
-    .close-btn {
-        float: right;
-        cursor: pointer;
-        color: #dcb5ff;
-        font-size: 22px;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* GLITCH */
-    @keyframes glitch {
-        0% { transform: translate(0); }
-        20% { transform: translate(-4px, 3px); }
-        40% { transform: translate(5px, -2px); }
-        60% { transform: translate(-3px, 1px); }
-        80% { transform: translate(2px, -3px); }
-        100% { transform: translate(0); }
-    }
-    .glitching { animation: glitch .12s infinite; }
-@keyframes fadeMystery {
-    from { opacity:0; }
-    to { opacity:1; }
-}
-</style>
+        @keyframes fadeMystery {
+            from {opacity:0;}
+            to {opacity:1;}
+        }
+    </style>
 </head>
 
 <body>
-<div style="
-    position:fixed;
-    top:10px;
-    right:10px;
-    z-index:50;
-">
-    <button onclick="openCodex()" style="
-        background:#6f2cff;
-        padding:10px 14px;
-        border:none;
-        border-radius:6px;
-        color:white;
-        cursor:pointer;
-        box-shadow:0 0 10px #a77cff;
-    ">Codex</button>
-</div>
-<!-- ==================== GALLERY ======================= -->
+
 <div class="gallery" id="gallery"></div>
 
-<!-- ==================== POPUP ========================= -->
-<div id="genericPopup" class="popup">
-    <div class="popup-content">
-        <span class="close-btn" onclick="closePopup()">&times;</span>
-        <div id="popupBody"></div>
+<!-- Popup Window -->
+<div id="popupContainer">
+    <div id="popupContent">
+        <div id="popupText"></div>
+        <div id="popupActions"></div>
+        <button onclick="closePopup()">Close</button>
     </div>
 </div>
 
 <script>
-/* =============================================================== */
-/*                 NAMED THUMBNAIL IMAGE MAP                       */
-/* =============================================================== */
-/* Replace each value with your OWN image paths */
+/* --------------------------------------------- */
+/*           THUMBNAILS (PLACEHOLDERS)           */
+/* --------------------------------------------- */
 
 const thumbnails = {
-    star: "images/star.png",
-    hans: "images/hans.png",
-    cafeExterior: "images/cafe-exterior.png",
-    cafeInterior: "images/cafe-interior.png",
-    loreRoom: "images/lore-room.png",
-    elevator: "images/elevator.png",
-    hallway: "images/hallway.png",
-    clue1: "images/clue1.png",
-    clue2: "images/clue2.png",
-    clue3: "images/clue3.png",
-    clue4: "images/clue4.png",
+    starPortrait:"images/star.png",
+    hansPortrait:"images/hans.png",
+    miloPortrait:"images/milo.png",
+    mikiPortrait:"images/miki.png",
+    chariPortrait:"images/chari.png",
 
-    // You can create more as needed:
-    chimeraRoom: "images/chimera-room.png",
-    library: "images/library.png",
-    portal: "images/portal.png",
-    starPortrait: "images/star-portrait.png",
-    hansPortrait: "images/hans-portrait.png",
+    cafeExterior:"images/cafeExterior.png",
+    cafeInterior:"images/cafeInterior.png",
+    loreRoom:"images/loreRoom.png",
 
-    // fallback if you forget one:
-    default: "images/default-placeholder.png"
+    musicRoom:"images/musicRoom.png",
+    secretLetter:"images/secretLetter.png",
+
+    escapeRoom:"images/escapeRoom.png",
+    yeshuaRescue:"images/yeshuaRescue.png",
+
+    lavenderTea:"images/lavenderTea.png",
+    matchaBlend:"images/matchaBlend.png"
 };
 
-/* =============================================================== */
-/*                      TILE ACTION MAP                            */
-/* =============================================================== */
-/* 36 named tiles for full world-building */
-
-const actions = [
-    "cafeExterior", "cafeInterior", "hans_clue1", "portalView", "music", "star",
-    "hans_clue2", "guest", "hans", "loreRoom",
-    "glitch", "morph", "menu", "elevator", "hans_clue3", "anchor",
-    "academy", "warp", "rift", "chatbot",
-    "youtube", "secret", "void", "ascend", "guest2", "forum",
-    "social", "anchor2", "portalTwo", "hans_clue4",
-    "library", "chimeraRoom", "portalThree", "music2",
-    "darkHallway", "final"
-];
-
-/* =============================================================== */
-/*                     IMAGE ASSIGNMENT MAP                        */
-/* =============================================================== */
-/* These connect action names to thumbnail images */
-
-const tileImages = {
-    star: thumbnails.star,
-    hans: thumbnails.hans,
-    hans_clue1: thumbnails.clue1,
-    hans_clue2: thumbnails.clue2,
-    hans_clue3: thumbnails.clue3,
-    hans_clue4: thumbnails.clue4,
-
-    cafeExterior: thumbnails.cafeExterior,
-    cafeInterior: thumbnails.cafeInterior,
-    loreRoom: thumbnails.loreRoom,
-    elevator: thumbnails.elevator,
-    darkHallway: thumbnails.hallway,
-
-    library: thumbnails.library,
-    chimeraRoom: thumbnails.chimeraRoom,
-    portalView: thumbnails.portal,
-    portalTwo: thumbnails.portal,
-    portalThree: thumbnails.portal,
-
-    // fallback
-    default: thumbnails.default
-};
-
-/* =============================================================== */
-/*                  GENERATE 36 TILES USING MAP                    */
-/* =============================================================== */
-
-const gallery = document.getElementById("gallery");
-
-gallery.innerHTML = actions.map(action => {
-    const img = tileImages[action] || tileImages.default;
-    return `
-        <div class="tile" data-action="${action}">
-            <div class="tile-content" style="background-image:url('${img}')"></div>
-            <div class="overlay"></div>
-        </div>
-    `;
-}).join("");
-
-document.querySelectorAll(".tile").forEach(tile => {
-    tile.addEventListener("click", () => handleAction(tile.dataset.action, tile));
-});
-
-/* =============================================================== */
-/*                      POPUP + HELPERS                            */
-/* =============================================================== */
-
-const genericPopup = document.getElementById("genericPopup");
-const popupBody = document.getElementById("popupBody");
-
-function showPopup(html){
-    popupBody.innerHTML = html;
-    genericPopup.classList.add("active");
-}
-function closePopup(){
-    genericPopup.classList.remove("active");
-}
-
-/* =============================================================== */
-/*                  ACTION DISPATCHER (MAIN LOGIC)                 */
-/* =============================================================== */
-
-function handleAction(action, tile){
-    switch(action){
-            
-case "hans":
-    unlockCodex("characters", "hans");
-    startHansChat();
-    break;
-
-case "star":
-    unlockCodex("characters", "star");
-    startStarChat();
-    break;
-
-case "cafeExterior":
-    unlockCodex("locations", "cafeExterior");
-    showPopup("The café exterior glows softly.");
-    break;
-
-case "loreRoom":
-    unlockCodex("locations", "loreRoom");
-    showPopup("You enter the Lore Room.");
-    break;
-
-            /* ------- STAR CHATBOT ------- */
-        case "star":
-            startStarChat();
-            break;
-
-        /* ------- HANS DIALOGUE ------- */
-        case "hans":
-            startHansChat();
-            break;
-
-        /* ------- HANS CLUES -------- */
-        case "hans_clue1":
-            showPopup("A faint waft of Earl Grey floats by… <br><br>Someone snobby must be near.");
-            break;
-        case "hans_clue2":
-            showPopup("You hear muttering: ‘Proper tea must steep in reverence…’");
-            break;
-        case "hans_clue3":
-            showPopup("Biscuit crumbs lead off-screen. Suspicious.");
-            break;
-        case "hans_clue4":
-            showPopup("A polished silver teaspoon lies abandoned… dramatic, British energy detected.");
-            break;
-
-        /* ---- BASIC ACTIONS (PLACEHOLDERS) ---- */
-        case "cafeExterior": showPopup("The café stands quiet under deep-purple night."); break;
-        case "cafeInterior": showPopup("Warm lights. Books. Purring. Sanctuary."); break;
-        case "loreRoom": showPopup("Shelves of old lore and glowing sigils."); break;
-        case "elevator": showPopup("A violet-lit elevator hums softly."); break;
-        case "portalView": showPopup("A shimmering portal pulses gently."); break;
-
-        /* ---- EFFECTS ---- */
-        case "glitch": glitchTile(tile); break;
-        case "morph": morphTile(tile); break;
-
-        default:
-            showPopup("This tile’s power has not yet been revealed.");
-    }
-}
-
-/* =============================================================== */
-/*                          HANS DIALOGUE                          */
-/* =============================================================== */
-
-const hansDialogue = {
-    start: {
-        text: `"Well well well… look what the chimera-cat dragged in."  
-        <br><br>
-        *Hans adjusts his monocle, sniffing the air like you’re a cup of oversteeped Earl Grey.*  
-        <br><br>
-        "Tell me, traveler, do you even know the difference between real tea and whatever leaf-flavored disappointment you pretend to enjoy?"`,
-        options: [
-            { label: "…Yes?", next: "yes1" },
-            { label: "Uhh… No?", next: "no1" }
-        ]
-    },
-
-    yes1: {
-        text: `"Oh DO you now? How utterly *precious*.  
-        <br><br>
-        Enlighten me, then—do you brew your tea at the proper angle?  
-        One must tilt the kettle exactly 17 degrees northeast to avoid angering the spirit of Darjeeling."`,
-        options: [
-            { label: "Obviously.", next: "yes2" },
-            { label: "What?!", next: "no2" }
-        ]
-    },
-
-    no1: {
-        text: `"Of course you don’t.  
-        <br><br>
-        Most visitors wouldn’t know Assam from a puddle they stepped in on the way here."`,
-        options: [
-            { label: "Rude.", next: "yes1" },
-            { label: "Teach me then.", next: "teach" }
-        ]
-    },
-
-    yes2: {
-        text: `"Well now I don’t believe you for a second, but I admire the confidence.  
-        <br><br>
-        Tell me, do you also serenade the teapot before pouring?"`,
-        options: [
-            { label: "Every morning.", next: "serious" },
-            { label: "You’re making this up.", next: "caught" }
-        ]
-    },
-
-    no2: {
-        text: `"Tea is a discipline, not… whatever chaos your life is.  
-        <br><br>
-        Try again."`,
-        options: [
-            { label: "Fine. Yes.", next: "yes2" }
-        ]
-    },
-
-    teach: {
-        text: `"Ah! Finally, a student with taste—or at least curiosity.  
-        <br><br>
-        First lesson: never trust anyone who microwaves water.  
-        They are agents of entropy."`,
-        options: [
-            { label: "Duly noted.", next: "end" }
-        ]
-    },
-
-    serious: {
-        text: `"You might be insufferable, but I respect the commitment.  
-        <br><br>
-        Congratulations, you are now 3% less of a disappointment."`,
-        options: [
-            { label: "I’ll take it?", next: "end" }
-        ]
-    },
-
-    caught: {
-        text: `"How *DARE* you imply I would fabricate tea law.  
-        <br><br>
-        Begone before I fetch the chamomile of judgment."`,
-        options: [
-            { label: "Sorry??", next: "end" }
-        ]
-    },
-
-    end: {
-        text: `"Run along now. I have important tea-snobbery to attend to."`,
-        options: [
-            { label: "Close", next: "close" }
-        ]
-    }
-};
-
-
-/* Show Hans popup */
-function startHansChat(){
-    showPopup(`<div id="hansBox"></div>`);
-    runHans("start");
-}
-
-/* Render a dialogue step */
-function runHans(node){
-    const box = document.getElementById("hansBox");
-    const data = hansDialogue[node];
-
-    let html = `<p>${data.text}</p><div style="margin-top:20px;">`;
-
-    data.options.forEach(opt => {
-        html += `<button style="
-            background:#6b3fa7;
-            color:white;
-            padding:8px 14px;
-            margin-right:10px;
-            border:none;
-            border-radius:6px;
-            cursor:pointer;
-        " onclick="handleHansChoice('${opt.next}')">${opt.label}</button>`;
-    });
-
-    html += "</div>";
-
-    box.innerHTML = html;
-}
-
-function handleHansChoice(next){
-    if(next === "close"){ closePopup(); return; }
-    runHans(next);
-}
-
-/* =============================================================== */
-/*                           STAR DIALOGUE                         */
-/* =============================================================== */
-
-const starDialogue = {
-    start: {
-        text: `
-        <div style="display:flex;gap:12px;">
-            <img src="${thumbnails.starPortrait}" width="70" style="border-radius:10px;">
-            <div><b>Star — Owner of the Chimera Café</b><br>
-            Goth • Saved • Scholar</div>
-        </div>
-        <br>“Welcome to my sanctuary.”`,
-        options: [
-            { label: "Who are you?", next: "who" },
-            { label: "What is this place?", next: "place" }
-        ]
-    },
-
-    who: {
-        text: `"I’m Star. Once a chimera experiment… now adopted by Yeshua. Redeemed. Free."`,
-        options: [
-            { label: "Tell me about Hans", next: "hansTalk" },
-            { label: "Tell me about your past", next: "past" }
-        ]
-    },
-
-    place: {
-        text: `"The Chimera Café sits between worlds. A refuge for the lost and the learning."`,
-        options: [
-            { label: "Who works here?", next: "who" }
-        ]
-    },
-
-    hansTalk: {
-        text: `"Hans? Snobby but loyal. If he insulted you, consider that affection."`,
-        options: [{ label: "He did insult me", next: "end" }]
-    },
-
-    past: {
-        text: `"We escaped because Yeshua pulled us out Himself. Light in the dark."`,
-        options: [{ label: "That’s beautiful", next: "end" }]
-    },
-
-    end: {
-        text: `"Stay as long as you need. You’re safe here."`,
-        options: [{ label: "Close", next: "close" }]
-    }
-};
-
-function startStarChat(){
-    showPopup(`<div id="starBox"></div>`);
-    runStar("start");
-}
-function runStar(n){
-    const box = document.getElementById("starBox");
-    const d = starDialogue[n];
-    let html = `<p>${d.text}</p><div>`;
-    d.options.forEach(o=>{
-        html += `<button onclick="handleStarChoice('${o.next}')">${o.label}</button>`;
-    });
-    html += `</div>`;
-    box.innerHTML = html;
-}
-function handleStarChoice(next){
-    if(next==="close"){ closePopup(); return; }
-    runStar(next);
-}
-
-/* =============================================================== */
-/*                         TILE EFFECTS                            */
-/* =============================================================== */
-
-function glitchTile(tile){
-    tile.classList.add("glitching");
-    setTimeout(()=> tile.classList.remove("glitching"), 7000);
-}
-function morphTile(tile){
-    const img = tile.querySelector(".tile-content");
-    img.style.filter = "blur(8px)";
-    setTimeout(()=>{
-        img.style.backgroundImage = `url('${thumbnails.portal}')`;
-        img.style.filter = "none";
-    },700);
-}
-    /* =============================================================== */
-/*                           CODEX SYSTEM                          */
-/* =============================================================== */
-
-/*
-Codex entries unlock when triggered by events.
-Stored in localStorage so the user keeps progress.
-*/
+/* --------------------------------------------- */
+/*                 CODEX DATA                    */
+/* --------------------------------------------- */
 
 const codexData = {
-    characters: {
-        star: {
-            name: "Star — The Redeemed Owner",
-            image: thumbnails.starPortrait,
-            text: `
-            Star is the gothic yet gentle owner of the Chimera Café.
-            Once a chimera lab creation, she and her siblings were rescued by Yeshua.
-            She now runs the café as a sanctuary for travelers.
-            `,
-            unlocked: false
-        },
-        hans: {
-            name: "Hans — The Teasnob",
-            image: thumbnails.hansPortrait,
-            text: `
-            Hans is one of the chimera siblings.
-            He carries himself like a British aristocrat and judges tea with brutal honesty.
-            Sarcastic but loyal, he considers snark a form of affection.
-            `,
-            unlocked: false
-        }
-    },
-
-    locations: {
-        cafeExterior: {
-            name: "The Chimera Café — Exterior",
-            image: thumbnails.cafeExterior,
-            text: `
-            Built in a hidden fold between worlds, the café exterior glows with deep violet lanterns.
-            It stands as a beacon for the lost and weary.
-            `,
-            unlocked: false
-        },
-        loreRoom: {
-            name: "Lore Chamber",
-            image: thumbnails.loreRoom,
-            text: `
-            A room filled with ancient writings, glowing sigils, journals, and rescued documents
-            relating to the chimeras' past and the experiments that once bound them.
-            `,
-            unlocked: false
-    }
-        function openMikiMusicRoom() {
-    if (!codexData.hiddenSecrets.musicRoom.unlocked) {
-        openPopup("Music Room Locked", "Solve Miki’s riddles first!");
-        return;
-    }
-
-    let html = `
-        <h2>Miki’s Music Room</h2>
-        <p>You've entered the neon-lit sanctuary where Miki composed songs between worlds.</p>
-        <div id="musicTracksContainer"></div>
-    `;
-
-    openPopup("Miki’s Music Room", html);
-
-    updateMikiMusicTracksUI();
-}
-
-function updateMikiMusicTracksUI() {
-    const container = document.getElementById("musicTracksContainer");
-    if (!container) return;
-
-    container.innerHTML = codexData.characters.miki.musicTracks.map((track, index) => `
-        <div style="border:1px solid #444;padding:10px;margin-top:10px;">
-            <b>${track.title}</b><br>
-            ${track.unlocked ? `
-                <audio controls src="${track.url}"></audio><br>
-                <a href="${track.url}" download style="color:#9af;">Download</a>
-            ` : `
-                <p>Locked — Solve the riddle:</p>
-                <button onclick="askMikiRiddle(${index})">Solve Riddle</button>
-            `}
-        </div>
-    `).join("");
-
-    // Check if all tracks are unlocked → unlock secret realm
-    const allUnlocked = codexData.characters.miki.musicTracks.every(t => t.unlocked);
-    if (allUnlocked && !codexData.hiddenSecrets.musicRealm?.unlocked) {
-        codexData.hiddenSecrets.musicRealm = {
-            name:"Neon Sound Realm",
-            image: thumbnails.musicRoom,
-            text:"A cosmic music dimension unlocked through sound and spirit.",
+    characters:{
+        star:{ name:"Star", image:thumbnails.starPortrait,
+            text:`Star is the edgy, gothy owner of the Chimera Café. She reads romance novels 
+            and studies Scripture. She protects her siblings fiercely.`,
             unlocked:true
-        };
-        alert("✨ Secret Realm Unlocked: Neon Sound Realm!");
-    }
-}
+        },
 
-function askMikiRiddle(trackIndex) {
-    const riddles = [
-        "Who escaped the Paris lab first?",
-        "What color is Miki’s hair stripe?",
-        "What is Miki’s favorite drink?"
-    ];
+        hans:{ name:"Hans — Tea Snob", image:thumbnails.hansPortrait,
+            text:`Hans is a sarcastic British chimera. He will judge your tea. Mercilessly.`,
+            unlocked:true
+        },
 
-    const answers = [
-        "miki",
-        "yellow",
-        "matcha"
-    ];
+        milo:{ name:"Milo — Zen Herb Gardener", image:thumbnails.miloPortrait,
+            text:`Soft-spoken, part Korean, part Parisian. Studies Taoism. Walks in Yeshua’s love.
+            Tends herbs and minds the spiritual balance.`,
+            unlocked:false
+        },
 
-    let user = prompt(riddles[trackIndex]);
-    if (!user) return;
+        miki:{ name:"Miki — Musician Chimera", image:thumbnails.mikiPortrait,
+            text:`First to escape the Paris lab.
+            Black emo hair with neon yellow stripe.
+            Loves matcha. Unlock music by solving riddles.`,
+            unlocked:false,
+            musicTracks:[
+                {title:"Track 1", url:"music/track1.mp3", unlocked:false},
+                {title:"Track 2", url:"music/track2.mp3", unlocked:false},
+                {title:"Track 3", url:"music/track3.mp3", unlocked:false},
+                {title:"Track 4", url:"music/track4.mp3", unlocked:false}
+            ]
+        },
 
-    if (user.toLowerCase().trim() === answers[trackIndex]) {
-        codexData.characters.miki.musicTracks[trackIndex].unlocked = true;
-        alert("Correct! Track unlocked!");
-        updateMikiMusicTracksUI();
-    } else {
-        alert("Nope! Try again.");
-
+        chari:{ name:"Chari — Young Cat-Rat Hybrid", image:thumbnails.chariPortrait,
+            text:`Anxious, quiet, carries two emotional support rats.
+            Shy but deeply observant. Learning café work.`,
+            unlocked:false
         }
-    function openMiloChamber() {
-    let wisdom = `
-        <p>Milo bows gently, incense drifting in soft curls.</p>
-        <p><i>“Peace, traveler. The Way is gentle.  
-        Tao teaches us balance.  
-        Yeshua teaches us love.  
-        Both teach us to walk in light.”</i></p>
-        <p>Answer my 3 questions to enter the Realm of Light.</p>
-        <div id="miloQuizArea"></div>
-    `;
-
-    openPopup("Milo’s Wisdom Chamber", wisdom);
-    loadMiloQuiz();
-}
-
-const miloQuestions = [
-    {
-        q:"What virtue does Yeshua emphasize above all?",
-        a:"love"
     },
-    {
-        q:"In Taoism, the Way is symbolized by flowing…?",
-        a:"water"
-    },
-    {
-        q:"Romans teaches salvation comes through confessing with your… what?",
-        a:"mouth"
-    }
-];
 
-let miloProgress = 0;
+    hiddenSecrets:{
+        musicRoom:{ name:"Miki’s Music Room", image:thumbnails.musicRoom,
+            text:`A neon sanctuary of sound. Unlock via riddles.`,
+            unlocked:false
+        },
 
-function loadMiloQuiz() {
-    const area = document.getElementById("miloQuizArea");
-    if (!area) return;
+        secretLetter:{ name:"Yeshua’s Letter", image:thumbnails.secretLetter,
+            text:`A hidden letter describing the rescue of the chimera siblings.`,
+            unlocked:false
+        },
 
-    const question = miloQuestions[miloProgress];
-    area.innerHTML = `
-        <p><b>Question ${miloProgress+1}:</b> ${question.q}</p>
-        <input id="miloAnswer" placeholder="Your answer…" style="padding:5px;width:70%;">
-        <button onclick="submitMiloAnswer()">Submit</button>
-    `;
-}
+        enlightenmentRealm:{ name:"Realm of Light", image:thumbnails.loreRoom,
+            text:`A realm revealed after answering Milo's wisdom questions.`,
+            unlocked:false
+        },
 
-function submitMiloAnswer() {
-    const input = document.getElementById("miloAnswer");
-    if (!input) return;
-
-    let user = input.value.toLowerCase().trim();
-    if (user === miloQuestions[miloProgress].a) {
-        miloProgress++;
-
-        if (miloProgress >= miloQuestions.length) {
-            unlockEnlightenmentRealm();
-            return;
+        musicRealm:{ name:"Neon Sound Realm", image:thumbnails.musicRoom,
+            text:`A cosmic realm accessed through musical mastery.`,
+            unlocked:false
         }
+    },
 
-        alert("Good. You walk well.");
-        loadMiloQuiz();
-    } else {
-        alert("Milo smiles softly. “Not quite. Try again.”");
-   
+    rescueChronicles:{
+        madScientistEscape:{ name:"The Escape", image:thumbnails.escapeRoom,
+            text:`The chimera siblings broke free from the lab. A night of terror and hope.`,
+            unlocked:false
+        },
 
+        yeshuaRescue:{ name:"Yeshua’s Intervention", image:thumbnails.yeshuaRescue,
+            text:`A light that shattered darkness. Yeshua rescued them.`,
+            unlocked:false
+        }
+    },
+
+    cafeMenu:{
+        lavenderTea:{ name:"Lavender Tea", image:thumbnails.lavenderTea,
+            text:`Hans’ favorite calming blend.`,
+            unlocked:false
+        },
+
+        matchaBlend:{ name:"Miki’s Matcha Blend", image:thumbnails.matchaBlend,
+            text:`A sharp green tea with neon energy.`,
+            unlocked:false
+        }
     }
 };
 
-function unlockEnlightenmentRealm() {
-    codexData.hiddenSecrets.enlightenmentRealm = {
-        name:"Realm of Light",
-        image: thumbnails.loreRoom,
-        text: `
-            <h3>✨ The Realm of Light ✨</h3>
-            <p>Milo guides you into a radiant place beyond shadows.</p>
+/* --------------------------------------------- */
+/*                POPUP SYSTEM                   */
+/* --------------------------------------------- */
 
-            <h4>Salvation through Yeshua</h4>
-            <p>The Book of Romans explains it clearly:</p>
-
-            <p><b>Romans 3:23</b> — “For all have sinned and fall short of the glory of God.”</p>
-            <p><b>Romans 6:23</b> — “For the wages of sin is death, but the gift of God is eternal life through Jesus Christ our Lord.”</p>
-            <p><b>Romans 10:9</b> — “If you confess with your mouth the Lord Jesus and believe in your heart that God raised Him from the dead, you will be saved.”</p>
-
-            <p><b>Romans 10:13</b> — “For everyone who calls on the name of the Lord shall be saved.”</p>
-
-            <p>Salvation is a gift.  
-            Come as you are.  
-            You are loved.</p>
-        `,
-        unlocked:true
-    };
-
-    alert("✨ Realm of Light Unlocked!");
-    openPopup("Realm of Light", codexData.hiddenSecrets.enlightenmentRealm.text);
-}
-/* ---------------- LOCAL STORAGE INIT ---------------- */
-function loadCodexState(){
-    let saved = localStorage.getItem("chimeraCodex");
-    if(saved){
-        let parsed = JSON.parse(saved);
-
-        // Apply unlock states to codex
-        for(let category in parsed){
-            for(let key in parsed[category]){
-                if(codexData[category] && codexData[category][key]){
-                    codexData[category][key].unlocked = parsed[category][key].unlocked;
-                }
-            }
-        }
-    }
+function openPopup(title, html, actions=[]) {
+    document.getElementById("popupText").innerHTML = `<h2>${title}</h2>${html}`;
+    const act = document.getElementById("popupActions");
+    act.innerHTML = "";
+    actions.forEach(a=>{
+        let b=document.createElement("button");
+        b.textContent=a.label;
+        b.onclick=a.action;
+        act.appendChild(b);
+    });
+    document.getElementById("popupContainer").style.display="flex";
 }
 
-function saveCodexState(){
-    localStorage.setItem("chimeraCodex", JSON.stringify(codexData));
+function closePopup(){
+    document.getElementById("popupContainer").style.display="none";
 }
 
-loadCodexState();
+/* --------------------------------------------- */
+/*           MYSTERY LINK (external)             */
+/* --------------------------------------------- */
 
-
-/* ---------------- UNLOCK FUNCTION ---------------- */
-function unlockCodex(category, key){
-    if(codexData[category] && codexData[category][key]){
-        codexData[category][key].unlocked = true;
-        saveCodexState();
-
-        showPopup(`
-            <h2>New Codex Entry Unlocked</h2>
-            <b>${codexData[category][key].name}</b>
-            <br><br>
-            <button style="
-                background:#7b2cff;
-                color:white;
-                border:none;
-                padding:10px 14px;
-                margin-top:10px;
-                border-radius:6px;
-                cursor:pointer;
-            " onclick="openCodex()">Open Codex</button>
-        `);
-    }
-}
-
-
-/* ---------------- OPEN CODEX WINDOW ---------------- */
-function openCodex(){
-    let html = `<h2>The Chimera Codex</h2>`;
-
-    for(let category in codexData){
-        html += `<h3 style="margin-top:20px;">${capitalize(category)}</h3>`;
-
-        for(let key in codexData[category]){
-            let entry = codexData[category][key];
-            if(entry.unlocked){
-                html += `
-                    <div style="
-                        background:#24023a;
-                        padding:10px;
-                        border-radius:8px;
-                        margin-bottom:10px;
-                        border:1px solid #7a46bf;
-                    ">
-                        <div style="display:flex; gap:10px;">
-                            <img src="${entry.image}" width="80" style="border-radius:8px;">
-                            <div>
-                                <b>${entry.name}</b>
-                                <p>${entry.text}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div style="
-                        background:#13001f;
-                        padding:10px;
-                        border-radius:8px;
-                        opacity:0.3;
-                        border:1px dashed #5b3a7a;
-                        margin-bottom:10px;
-                    ">
-                        <b>???</b>
-                    </div>
-                `;
-            }
-        }
-    }
-
-    showPopup(html);
-}
-
-function capitalize(str){
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-    function openMysteryLink(url) {
-    const overlay = document.createElement("div");
-    overlay.style = `
+function openMysteryLink(url) {
+    const layer=document.createElement("div");
+    layer.style=`
         position:fixed;top:0;left:0;width:100%;height:100%;
         background:rgba(50,0,90,0.4);
         backdrop-filter:blur(5px);
         animation:fadeMystery 1s forwards;
         z-index:9999;
     `;
-    document.body.appendChild(overlay);
+    document.body.appendChild(layer);
 
-    setTimeout(()=>{ window.open(url, "_blank"); }, 800);
-    setTimeout(()=>{ overlay.remove(); }, 1500);
+    setTimeout(()=>window.open(url, "_blank"),800);
+    setTimeout(()=>layer.remove(),1500);
 }
 
+/* --------------------------------------------- */
+/*                 CHATBOTS                      */
+/* --------------------------------------------- */
 
+function hansChat(){
+    openPopup("Hans",
+        `<p>Well well well… look what the chimera-cat dragged in.</p>
+        <p>What do you want then? Tea? A personality upgrade?</p>`,
+        [
+            {label:"Ask about tea", action:()=>alert("Hans: Your palate may not be ready for my blends…")},
+            {label:"Ask about siblings", action:()=>alert("Hans: They’re tolerable. Mostly.")},
+        ]
+    );
+}
+
+function starChat(){
+    openPopup("Star",
+        `<p>Hey traveler. Welcome to my café.</p>
+         <p>I used to be lost between worlds, but Yeshua brought me home.</p>`
+    );
+}
+
+function chariChat(){
+    openPopup("Chari",
+        `<p>H-Hi… I’m Chari…</p>
+         <p>My rats help me when I get scared…</p>`
+    );
+}
+
+/* --------------------------------------------- */
+/*          MIKI’S MUSIC ROOM + RIDDLES          */
+/* --------------------------------------------- */
+
+function openMikiMusicRoom() {
+    if (!codexData.hiddenSecrets.musicRoom.unlocked) {
+        openPopup("Locked","Solve Miki’s riddles first.");
+        return;
+    }
+
+    openPopup("Miki’s Music Room",
+        `<p>The neon lights hum with energy.</p>
+         <div id="musicTracksContainer"></div>`
+    );
+
+    updateMikiMusicTracksUI();
+}
+
+function updateMikiMusicTracksUI() {
+    const div=document.getElementById("musicTracksContainer");
+    if(!div) return;
+
+    let html="";
+    codexData.characters.miki.musicTracks.forEach((t,i)=>{
+        html+=`
+        <div style="border:1px solid #444; margin:10px; padding:10px;">
+            <b>${t.title}</b><br>
+            ${t.unlocked?`
+                <audio controls src="${t.url}"></audio><br>
+                <a href="${t.url}" download>Download</a>
+            `:`
+                <p>Locked — Solve riddle:</p>
+                <button onclick="askMikiRiddle(${i})">Solve</button>
+            `}
+        </div>`;
+    });
+
+    div.innerHTML = html;
+
+    // Unlock Neon Sound Realm
+    if (codexData.characters.miki.musicTracks.every(t=>t.unlocked)) {
+        codexData.hiddenSecrets.musicRealm.unlocked = true;
+    }
+}
+
+function askMikiRiddle(i){
+    const riddles=[
+        "Who escaped the Paris lab first?",
+        "What color is Miki’s neon hair stripe?",
+        "What drink does Miki love most?",
+        "Bonus: What city was she experimented in?"
+    ];
+
+    const answers=["miki","yellow","matcha","paris"];
+
+    let user = prompt(riddles[i]);
+    if(!user) return;
+
+    if(user.toLowerCase().trim()===answers[i]){
+        codexData.characters.miki.musicTracks[i].unlocked = true;
+        codexData.hiddenSecrets.musicRoom.unlocked = true;
+        alert("Correct!");
+        updateMikiMusicTracksUI();
+    } else {
+        alert("Incorrect. Try again.");
+    }
+}
+
+/* --------------------------------------------- */
+/*           MILO — WISDOM CHAMBER               */
+/* --------------------------------------------- */
+
+function openMiloChamber(){
+    openPopup("Milo’s Chamber",
+        `<p>Milo bows slightly. Incense drifts softly.</p>
+         <p><i>“Peace, traveler. The Way is gentle.”</i></p>
+         <div id="miloQuizArea"></div>`
+    );
+    loadMiloQuiz();
+}
+
+const miloQuestions=[
+    {q:"What virtue does Yeshua emphasize above all?", a:"love"},
+    {q:"In Taoism, the Way is like flowing…?", a:"water"},
+    {q:"Romans teaches salvation comes by confessing with your… what?", a:"mouth"}
+];
+
+let miloIndex=0;
+
+function loadMiloQuiz(){
+    const area=document.getElementById("miloQuizArea");
+    if(!area) return;
+
+    area.innerHTML=`
+        <p><b>${miloQuestions[miloIndex].q}</b></p>
+        <input id="miloAnswer" style="padding:5px;width:70%;">
+        <button onclick="submitMiloAnswer()">Submit</button>
+    `;
+}
+
+function submitMiloAnswer(){
+    const input=document.getElementById("miloAnswer");
+    let val=input.value.toLowerCase().trim();
+
+    if(val===miloQuestions[miloIndex].a){
+        miloIndex++;
+        if(miloIndex>=miloQuestions.length){
+            unlockEnlightenmentRealm();
+            return;
+        }
+        alert("Good. Continue walking in light.");
+        loadMiloQuiz();
+    } else {
+        alert("Gentle correction: try again.");
+    }
+}
+
+function unlockEnlightenmentRealm(){
+    codexData.hiddenSecrets.enlightenmentRealm.unlocked = true;
+
+    openPopup("Realm of Light",
+        `<h3>✨ You enter the Realm of Light ✨</h3>
+         <p>Milo leads you into a glowing reality filled with peace.</p>
+
+         <h4>THE ROMANS ROAD TO SALVATION</h4>
+
+         <p><b>Romans 3:23</b> — All have sinned.</p>
+         <p><b>Romans 6:23</b> — Sin leads to death, but the gift of God is eternal life.</p>
+         <p><b>Romans 10:9</b> — Confess with your mouth and believe in your heart, and you will be saved.</p>
+         <p><b>Romans 10:13</b> — Everyone who calls upon the Lord will be saved.</p>
+
+         <p>You are loved. You are invited. The door is open.</p>`
+    );
+
+    miloIndex=0;
+}
+
+/* --------------------------------------------- */
+/*                GALLERY SETUP                  */
+/* --------------------------------------------- */
+
+const galleryTiles = [
+    {image:thumbnails.starPortrait, action:starChat},
+    {image:thumbnails.hansPortrait, action:hansChat},
+    {image:thumbnails.miloPortrait, action:openMiloChamber},
+    {image:thumbnails.mikiPortrait, action:()=>openMikiMusicRoom()},
+    {image:thumbnails.chariPortrait, action:chariChat},
+
+    {image:thumbnails.cafeExterior, action:()=>openMysteryLink("https://example.com")},
+    {image:thumbnails.loreRoom, action:()=>openPopup("Lore Room","Ancient lore awaits…")},
+    {image:thumbnails.secretLetter, action:()=>openPopup("Secret Letter","A hidden message appears…")},
+
+    {image:thumbnails.escapeRoom, action:()=>openPopup("Escape","The siblings fled the lab…")},
+    {image:thumbnails.yeshuaRescue, action:()=>openPopup("Rescue","Yeshua intervened with light…")},
+
+    {image:thumbnails.lavenderTea, action:()=>openPopup("Lavender Tea","A soothing blend.")},
+    {image:thumbnails.matchaBlend, action:()=>openPopup("Matcha Blend","Miki’s favorite drink.")},
+];
+
+// Fill to 36
+while(galleryTiles.length<36){
+    galleryTiles.push({
+        image:thumbnails.cafeInterior,
+        action:()=>openPopup("Mystery","Something whispers here...")
+    });
+}
+
+function initGallery(){
+    const d=document.getElementById("gallery");
+    galleryTiles.forEach(t=>{
+        let box=document.createElement("div");
+        box.className="tile";
+        let img=document.createElement("img");
+        img.src=t.image;
+        box.appendChild(img);
+        box.onclick=t.action;
+        d.appendChild(box);
+    });
+}
+
+initGallery();
 </script>
 
 </body>
+</html>

@@ -574,6 +574,77 @@ const codexData = {
             relating to the chimeras' past and the experiments that once bound them.
             `,
             unlocked: false
+    }
+        function openMikiMusicRoom() {
+    if (!codexData.hiddenSecrets.musicRoom.unlocked) {
+        openPopup("Music Room Locked", "Solve Miki’s riddles first!");
+        return;
+    }
+
+    let html = `
+        <h2>Miki’s Music Room</h2>
+        <p>You've entered the neon-lit sanctuary where Miki composed songs between worlds.</p>
+        <div id="musicTracksContainer"></div>
+    `;
+
+    openPopup("Miki’s Music Room", html);
+
+    updateMikiMusicTracksUI();
+}
+
+function updateMikiMusicTracksUI() {
+    const container = document.getElementById("musicTracksContainer");
+    if (!container) return;
+
+    container.innerHTML = codexData.characters.miki.musicTracks.map((track, index) => `
+        <div style="border:1px solid #444;padding:10px;margin-top:10px;">
+            <b>${track.title}</b><br>
+            ${track.unlocked ? `
+                <audio controls src="${track.url}"></audio><br>
+                <a href="${track.url}" download style="color:#9af;">Download</a>
+            ` : `
+                <p>Locked — Solve the riddle:</p>
+                <button onclick="askMikiRiddle(${index})">Solve Riddle</button>
+            `}
+        </div>
+    `).join("");
+
+    // Check if all tracks are unlocked → unlock secret realm
+    const allUnlocked = codexData.characters.miki.musicTracks.every(t => t.unlocked);
+    if (allUnlocked && !codexData.hiddenSecrets.musicRealm?.unlocked) {
+        codexData.hiddenSecrets.musicRealm = {
+            name:"Neon Sound Realm",
+            image: thumbnails.musicRoom,
+            text:"A cosmic music dimension unlocked through sound and spirit.",
+            unlocked:true
+        };
+        alert("✨ Secret Realm Unlocked: Neon Sound Realm!");
+    }
+}
+
+function askMikiRiddle(trackIndex) {
+    const riddles = [
+        "Who escaped the Paris lab first?",
+        "What color is Miki’s hair stripe?",
+        "What is Miki’s favorite drink?"
+    ];
+
+    const answers = [
+        "miki",
+        "yellow",
+        "matcha"
+    ];
+
+    let user = prompt(riddles[trackIndex]);
+    if (!user) return;
+
+    if (user.toLowerCase().trim() === answers[trackIndex]) {
+        codexData.characters.miki.musicTracks[trackIndex].unlocked = true;
+        alert("Correct! Track unlocked!");
+        updateMikiMusicTracksUI();
+    } else {
+        alert("Nope! Try again.");
+
         }
     }
 };

@@ -488,6 +488,161 @@ function morphTile(tile){
         img.style.filter = "none";
     },700);
 }
+    /* =============================================================== */
+/*                           CODEX SYSTEM                          */
+/* =============================================================== */
+
+/*
+Codex entries unlock when triggered by events.
+Stored in localStorage so the user keeps progress.
+*/
+
+const codexData = {
+    characters: {
+        star: {
+            name: "Star — The Redeemed Owner",
+            image: thumbnails.starPortrait,
+            text: `
+            Star is the gothic yet gentle owner of the Chimera Café.
+            Once a chimera lab creation, she and her siblings were rescued by Yeshua.
+            She now runs the café as a sanctuary for travelers.
+            `,
+            unlocked: false
+        },
+        hans: {
+            name: "Hans — The Teasnob",
+            image: thumbnails.hansPortrait,
+            text: `
+            Hans is one of the chimera siblings.
+            He carries himself like a British aristocrat and judges tea with brutal honesty.
+            Sarcastic but loyal, he considers snark a form of affection.
+            `,
+            unlocked: false
+        }
+    },
+
+    locations: {
+        cafeExterior: {
+            name: "The Chimera Café — Exterior",
+            image: thumbnails.cafeExterior,
+            text: `
+            Built in a hidden fold between worlds, the café exterior glows with deep violet lanterns.
+            It stands as a beacon for the lost and weary.
+            `,
+            unlocked: false
+        },
+        loreRoom: {
+            name: "Lore Chamber",
+            image: thumbnails.loreRoom,
+            text: `
+            A room filled with ancient writings, glowing sigils, journals, and rescued documents
+            relating to the chimeras' past and the experiments that once bound them.
+            `,
+            unlocked: false
+        }
+    }
+};
+
+
+/* ---------------- LOCAL STORAGE INIT ---------------- */
+function loadCodexState(){
+    let saved = localStorage.getItem("chimeraCodex");
+    if(saved){
+        let parsed = JSON.parse(saved);
+
+        // Apply unlock states to codex
+        for(let category in parsed){
+            for(let key in parsed[category]){
+                if(codexData[category] && codexData[category][key]){
+                    codexData[category][key].unlocked = parsed[category][key].unlocked;
+                }
+            }
+        }
+    }
+}
+
+function saveCodexState(){
+    localStorage.setItem("chimeraCodex", JSON.stringify(codexData));
+}
+
+loadCodexState();
+
+
+/* ---------------- UNLOCK FUNCTION ---------------- */
+function unlockCodex(category, key){
+    if(codexData[category] && codexData[category][key]){
+        codexData[category][key].unlocked = true;
+        saveCodexState();
+
+        showPopup(`
+            <h2>New Codex Entry Unlocked</h2>
+            <b>${codexData[category][key].name}</b>
+            <br><br>
+            <button style="
+                background:#7b2cff;
+                color:white;
+                border:none;
+                padding:10px 14px;
+                margin-top:10px;
+                border-radius:6px;
+                cursor:pointer;
+            " onclick="openCodex()">Open Codex</button>
+        `);
+    }
+}
+
+
+/* ---------------- OPEN CODEX WINDOW ---------------- */
+function openCodex(){
+    let html = `<h2>The Chimera Codex</h2>`;
+
+    for(let category in codexData){
+        html += `<h3 style="margin-top:20px;">${capitalize(category)}</h3>`;
+
+        for(let key in codexData[category]){
+            let entry = codexData[category][key];
+            if(entry.unlocked){
+                html += `
+                    <div style="
+                        background:#24023a;
+                        padding:10px;
+                        border-radius:8px;
+                        margin-bottom:10px;
+                        border:1px solid #7a46bf;
+                    ">
+                        <div style="display:flex; gap:10px;">
+                            <img src="${entry.image}" width="80" style="border-radius:8px;">
+                            <div>
+                                <b>${entry.name}</b>
+                                <p>${entry.text}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div style="
+                        background:#13001f;
+                        padding:10px;
+                        border-radius:8px;
+                        opacity:0.3;
+                        border:1px dashed #5b3a7a;
+                        margin-bottom:10px;
+                    ">
+                        <b>???</b>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    showPopup(html);
+}
+
+function capitalize(str){
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 </script>
 
 </body>

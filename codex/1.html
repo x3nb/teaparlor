@@ -837,6 +837,21 @@ function openCodex(){
 function capitalize(str){
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+    function openMysteryLink(url) {
+    const overlay = document.createElement("div");
+    overlay.style = `
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:rgba(50,0,90,0.4);
+        backdrop-filter:blur(5px);
+        animation:fadeMystery 1s forwards;
+        z-index:9999;
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>{ window.open(url, "_blank"); }, 800);
+    setTimeout(()=>{ overlay.remove(); }, 1500);
+}
+
 
 </script>
 

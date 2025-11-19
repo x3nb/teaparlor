@@ -248,8 +248,28 @@ function closePopup(){
 
 function handleAction(action, tile){
     switch(action){
+            
+case "hans":
+    unlockCodex("characters", "hans");
+    startHansChat();
+    break;
 
-        /* ------- STAR CHATBOT ------- */
+case "star":
+    unlockCodex("characters", "star");
+    startStarChat();
+    break;
+
+case "cafeExterior":
+    unlockCodex("locations", "cafeExterior");
+    showPopup("The café exterior glows softly.");
+    break;
+
+case "loreRoom":
+    unlockCodex("locations", "loreRoom");
+    showPopup("You enter the Lore Room.");
+    break;
+
+            /* ------- STAR CHATBOT ------- */
         case "star":
             startStarChat();
             break;

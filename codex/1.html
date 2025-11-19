@@ -646,6 +646,69 @@ function askMikiRiddle(trackIndex) {
         alert("Nope! Try again.");
 
         }
+    function openMiloChamber() {
+    let wisdom = `
+        <p>Milo bows gently, incense drifting in soft curls.</p>
+        <p><i>“Peace, traveler. The Way is gentle.  
+        Tao teaches us balance.  
+        Yeshua teaches us love.  
+        Both teach us to walk in light.”</i></p>
+        <p>Answer my 3 questions to enter the Realm of Light.</p>
+        <div id="miloQuizArea"></div>
+    `;
+
+    openPopup("Milo’s Wisdom Chamber", wisdom);
+    loadMiloQuiz();
+}
+
+const miloQuestions = [
+    {
+        q:"What virtue does Yeshua emphasize above all?",
+        a:"love"
+    },
+    {
+        q:"In Taoism, the Way is symbolized by flowing…?",
+        a:"water"
+    },
+    {
+        q:"Romans teaches salvation comes through confessing with your… what?",
+        a:"mouth"
+    }
+];
+
+let miloProgress = 0;
+
+function loadMiloQuiz() {
+    const area = document.getElementById("miloQuizArea");
+    if (!area) return;
+
+    const question = miloQuestions[miloProgress];
+    area.innerHTML = `
+        <p><b>Question ${miloProgress+1}:</b> ${question.q}</p>
+        <input id="miloAnswer" placeholder="Your answer…" style="padding:5px;width:70%;">
+        <button onclick="submitMiloAnswer()">Submit</button>
+    `;
+}
+
+function submitMiloAnswer() {
+    const input = document.getElementById("miloAnswer");
+    if (!input) return;
+
+    let user = input.value.toLowerCase().trim();
+    if (user === miloQuestions[miloProgress].a) {
+        miloProgress++;
+
+        if (miloProgress >= miloQuestions.length) {
+            unlockEnlightenmentRealm();
+            return;
+        }
+
+        alert("Good. You walk well.");
+        loadMiloQuiz();
+    } else {
+        alert("Milo smiles softly. “Not quite. Try again.”");
+   
+
     }
 };
 

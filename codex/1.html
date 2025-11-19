@@ -712,7 +712,33 @@ function submitMiloAnswer() {
     }
 };
 
+function unlockEnlightenmentRealm() {
+    codexData.hiddenSecrets.enlightenmentRealm = {
+        name:"Realm of Light",
+        image: thumbnails.loreRoom,
+        text: `
+            <h3>✨ The Realm of Light ✨</h3>
+            <p>Milo guides you into a radiant place beyond shadows.</p>
 
+            <h4>Salvation through Yeshua</h4>
+            <p>The Book of Romans explains it clearly:</p>
+
+            <p><b>Romans 3:23</b> — “For all have sinned and fall short of the glory of God.”</p>
+            <p><b>Romans 6:23</b> — “For the wages of sin is death, but the gift of God is eternal life through Jesus Christ our Lord.”</p>
+            <p><b>Romans 10:9</b> — “If you confess with your mouth the Lord Jesus and believe in your heart that God raised Him from the dead, you will be saved.”</p>
+
+            <p><b>Romans 10:13</b> — “For everyone who calls on the name of the Lord shall be saved.”</p>
+
+            <p>Salvation is a gift.  
+            Come as you are.  
+            You are loved.</p>
+        `,
+        unlocked:true
+    };
+
+    alert("✨ Realm of Light Unlocked!");
+    openPopup("Realm of Light", codexData.hiddenSecrets.enlightenmentRealm.text);
+}
 /* ---------------- LOCAL STORAGE INIT ---------------- */
 function loadCodexState(){
     let saved = localStorage.getItem("chimeraCodex");
